@@ -1,8 +1,16 @@
 # Network Programming
 
+Tentative topics:
+
+- [Module 1: Network basics](./mod1/README.md)
+- [Module 2: Socket programming](./mod2/README.md)
+- [Module 3: Network application programming](./mod3/README.md)
+- [Module 4: Network virtualization](./mod4/README.md)
+- [Module 5: Network modeling, simulation and evaluation](./mod5/README.md)
 
 
 # Reference textbooks
+- [Foundations of Modern Networking: SDN, NFV, QoE, IoT, and Cloud](http://williamstallings.com/Network/)
 - [Foundations of Python Network Programming](https://github.com/brandon-rhodes/fopnp)
 - [TCP/IP Illustrated](http://www.kohala.com/start/)
 - [Hands-On Network Programming with C](https://github.com/codeplea/Hands-On-Network-Programming-with-C)
