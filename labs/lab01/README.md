@@ -2,7 +2,7 @@
 
 __Description__
 
-Setup the lab environment and get familiar with the SEED VM. You need a USB 3.0+ thumb drive or USB 3.0+ SSD with at least 256GB or install on your own laptop with free space of at least 256GB.
+Setup the lab environment and get familiar with the **SEED VM 2.0**. You need a USB 3.0+ thumb drive or USB 3.0+ SSD with at least 256GB or install on your own laptop with free space of at least 256GB.
 
 * *Rule of thumb to choose software: always choose the latest and STABLE version*
 * Download and install [VirtualBox](https://www.virtualbox.org/) and the extension pack
