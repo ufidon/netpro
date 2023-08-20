@@ -46,8 +46,21 @@ Practice 🖊️
 With netcat (nc), 
 - transfer files between two terminals
 - simulate a chat session
-- hex-dump transmitted and received data
+- port scanning
 
+```bash
+# simulate a chat session
+# server side
+nc -lup 9999
+# client side
+nc -u localhost 9999
+
+# transfer files between two terminals
+# receiver side
+nc -l -p 6666 > afile
+# sender side
+nc -w 3 ./bfile 6666 < afile
+```
 
 Check network status
 ---
