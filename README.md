@@ -2,11 +2,11 @@
 
 Tentative topics:
 
-- [Module 1: Network basics](./mod1/README.md)
-- [Module 2: Socket programming](./mod2/README.md)
-- [Module 3: Network application programming](./mod3/README.md)
-- [Module 4: Network virtualization](./mod4/README.md)
-- [Module 5: Network modeling, simulation and evaluation](./mod5/README.md)
+- [Module 1: Network basics](./lectures/mod1/README.md)
+- [Module 2: Socket programming](./lectures/mod2/README.md)
+- [Module 3: Network application programming](./lectures/mod3/README.md)
+- [Module 4: Network virtualization](./lectures/mod4/README.md)
+- [Module 5: Network modeling, simulation and evaluation](./lectures/mod5/README.md)
 
 
 # Reference textbooks
