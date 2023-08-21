@@ -25,7 +25,7 @@ __Report__
 
 Write a report about:
 
-* (20%)the process you setup the lab environment (VM summary is sufficient)
+* (20%)the process you setup the SEED VM (VM summary is sufficient)
 * (50%)the process you test the NAT network
 * (30%)the process you setup and test vs code and the Python extension
 
