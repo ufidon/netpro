@@ -5,7 +5,7 @@ __Description__
 Setup the lab environment and get familiar with the **SEED VM 2.0**. You need a USB 3.0+ thumb drive or USB 3.0+ SSD with at least 256GB or install on your own laptop with free space of at least 256GB.
 
 * *Rule of thumb to choose software: always choose the latest and STABLE version*
-* Download and install [VirtualBox](https://www.virtualbox.org/) and the extension pack
+* Download and install [VirtualBox](https://www.virtualbox.org/)
 * Download the [SEED VM](https://seedsecuritylabs.org/) form its official website
 * Choose an installation approach and follow the corresponding [SEED manuals](https://seedsecuritylabs.org/labsetup.html) to install a SEED environment.
 * Here we choose [Installing SEED VM](https://github.com/seed-labs/seed-labs/blob/master/manuals/vm/seedvm-manual.md) on a local computer.
@@ -32,6 +32,17 @@ Write a report about:
 __Demo video__
 * [How to setup SEED 2.0 lab environment?](https://youtu.be/ejydR40c_Gw)
 * [How to setup SEED 1.0 lab environment?](https://youtu.be/pc5QJPiFbNQ)
+
+
+__Extra credits: Install Parrot Security Linux__
+* (2%) Go to its official website [Parrot Security Linux](https://www.parrotsec.org/download/), download its 64-bit Virtual machine in VirtualBox format - virtualbox (amd64).
+* (2%) Import this VM into VirtualBox. For further information, refer to [its official document](https://www.parrotsec.org/docs/).
+```bash
+default username: parrot
+default password: parrot
+```
+* (2%) Put SEED VM and Parrot Security Linux in the same NAT network, create a NAT network in VirtualBox if you don't have one
+* (4%)Make sure SEED VM and Parrot Security Linux can ping each other
 
 __References__
 * [VirtualBox](https://www.virtualbox.org/)
