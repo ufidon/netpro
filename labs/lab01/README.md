@@ -52,5 +52,7 @@ __References__
 * [bootlin](https://bootlin.com)
 * *For Mac computers*
   * [Developer preview VirtualBox for macOS / Arm64 (M1/M2) hosts](https://www.virtualbox.org/wiki/Download_Old_Builds_7_0)
+  * [How to install Ubuntu on Mac using VirtualBox?](https://medium.com/tech-lounge/how-to-install-ubuntu-on-mac-using-virtualbox-3a26515aa869)
+  * [How to Install Ubuntu Linux on Apple Silicon MacBooks](https://dev.to/andrewbaisden/how-to-install-ubuntu-linux-on-apple-silicon-macbooks-1nia)
   * [Using UTM: how To Install Parrot OS on Mac M1?](https://minkcoregame.medium.com/how-to-install-parrot-os-on-mac-m1-c1f20438631)
     * [Securely run operating systems on your Mac](https://mac.getutm.app/)
