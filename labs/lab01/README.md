@@ -18,6 +18,7 @@ Setup the lab environment and get familiar with the **SEED VM 2.0**. You need a 
     sudo apt upgrade
     ```
 * Download and install [Visual Studio Code](https://code.visualstudio.com/download)
+  * double-click the downloaded file to install it
 * Run vs code, install Python extension
 
 	
@@ -49,3 +50,7 @@ __References__
 * [SEED security labs](https://seedsecuritylabs.org/)
 * [Hands on security](https://www.handsonsecurity.net/)
 * [bootlin](https://bootlin.com)
+* *For Mac computers*
+  * [Developer preview VirtualBox for macOS / Arm64 (M1/M2) hosts](https://www.virtualbox.org/wiki/Download_Old_Builds_7_0)
+  * [Using UTM: how To Install Parrot OS on Mac M1?](https://minkcoregame.medium.com/how-to-install-parrot-os-on-mac-m1-c1f20438631)
+    * [Securely run operating systems on your Mac](https://mac.getutm.app/)
