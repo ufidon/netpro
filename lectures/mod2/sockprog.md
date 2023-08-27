@@ -3,7 +3,9 @@
 Access network information
 ---
 - [source code](./code/socketpro.ipynb)
-
+  ```bash
+  pip3 install  matplotlib ipython jupyter pandas
+  ```
 
 Get & set socket options
 ---
