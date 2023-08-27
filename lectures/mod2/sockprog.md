@@ -35,3 +35,8 @@ Get time from the internet time server
   sudo apt install python3-pip
   pip3 install ntplib
   ```
+
+# References
+- [socket — Low-level networking interface](https://docs.python.org/3/library/socket.html)
+- [argparse — Parser for command-line options, arguments and sub-commands](https://docs.python.org/3/library/argparse.html)
+- [ntplib](https://pypi.org/project/ntplib/)
