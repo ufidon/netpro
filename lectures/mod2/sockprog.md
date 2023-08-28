@@ -4,7 +4,7 @@ Access network information
 ---
 - [source code](./code/socketpro.ipynb)
   ```bash
-  pip3 install  matplotlib ipython jupyter pandas
+  sudo apt install  ipython3 jupyter jupyter-notebook
   ```
 
 Get & set socket options

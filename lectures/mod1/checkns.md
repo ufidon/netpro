@@ -59,7 +59,7 @@ nc -u localhost 9999
 # receiver side
 nc -l -p 6666 > afile
 # sender side
-nc -w 3 ./bfile 6666 < afile
+nc -w 3 localhost 6666 < afile
 ```
 
 Check network status
@@ -101,3 +101,28 @@ Practice 🖊️
 - identify all ports used by inetsim
 - request the inetsim services using netcat
 - check the socket status with ss
+
+```bash
+# install and run inetsim
+sudo apt update && sudo apt upgrade
+sudo apt install inetsim
+
+# check inetsim status
+sudo systemctl status inetsim
+# start/stop/restart inetsim status
+sudo systemctl start/stop/restart inetsim status
+
+# identify all ports used by inetsim
+ss -ltp
+
+# request the inetsim services using netcat
+nc localhost service_port_number
+# e.g. Echo service
+nc localhost 7
+nc localhost 13 # Daytime service
+
+# check the socket status with ss
+ss -tp
+```
+
+- configure inetsim using [/etc/inetsim/inetsim.conf](https://manpages.ubuntu.com/manpages/focal/en/man5/inetsim.conf.5.html)
