@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # send message to a server then receive reply
 # using UDP
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Send back whatever received, so called echo
 # using UDP
 
