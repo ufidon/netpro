@@ -17,6 +17,8 @@ Tentative topics:
 - [Mastering-Python-Networking](https://github.com/PacktPublishing/Mastering-Python-Networking-Fourth-Edition)
 - [Python Network Programming Cookbook](https://github.com/PacktPublishing/Python-Network-Programming-Cookbook-Second-Edition)
 - [Python Network Programming Techniques](https://github.com/PacktPublishing/Python-Networking-Cookbook)
+- [Python Network Programming Techniques](https://github.com/PacktPublishing/Python-Networking-Cookbook)
+- [Mastering Python for Networking and Security 2e](https://github.com/PacktPublishing/Mastering-Python-for-Networking-and-Security-Second-Edition)
 - [Java Network Programming](https://www.oreilly.com/library/view/java-network-programming/9781449365936/)
 - [C# Network Programming](https://www.wiley.com/en-us/C%23+Network+Programming-p-9780782151497)
 - [Network Programming with Go](https://github.com/arstream/Network-Programming-with-Go)
