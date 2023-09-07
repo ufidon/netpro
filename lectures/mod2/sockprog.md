@@ -13,8 +13,6 @@ Get & set socket options
   - [source code](./code/reuseaddr.py)
 
 
-## Basic socket programming
-
 Endpoint: (IP : Port number)
 ---
 - Source (8.8.8.8:53) -> Destination (10.0.2.5:46132)
@@ -106,15 +104,9 @@ socket.getservbyname('http') # ->80
     ```
   
 
-
-Simple client/server programs
+[TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)
 ---
-- simple TCP client/server programs
-  - [TCP echo server](./code/tcpEchoServer.py)
-  - [TCP echo client](./code/tcpEchoClient.py)
-- simple UDP client/server programs
-  - [UDP echo server](./code/udpEchoServer.py)
-  - [UDP echo client](./code/udpEchoClient.py)
+
 
 
 Handle socket errors
