@@ -25,6 +25,11 @@ Tentative topics:
   - [example code](https://github.com/awoodbeck/gnp)
   - [2e](https://github.com/Apress/network-prog-with-go-2e)
 
+# Network basics
+- [Computer Networking: a Top Down Approach 8th](https://gaia.cs.umass.edu/kurose_ross/index.php)
+  - [CMPSCI 453: Computer Networks](http://www-edlab.cs.umass.edu/cs453/)
+- [Computer Networks 6e](https://computernetworksbook.com/)
+
 # Online resources
 - [Socket Programming in Python](https://realpython.com/python-sockets/)
 - [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
