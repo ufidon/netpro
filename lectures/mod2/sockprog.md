@@ -195,13 +195,54 @@ python tcp_deadlock.py client 127.0.0.1 32
 ```
 
 
-Closed connections and half-open connections
+How to close a TCP connection?
 ---
+- a TCP stream is duplex (bidirectional)
+```mermaid
+flowchart LR;
+  E1("Endpoint1(ip1, port1)");
+  E2("Endpoint2(ip2, port2)");
+  E1 -->|write -> read| E2;
+  E2 -->|read <- write| E1;
+```
+- a socket recv() returns an empty string when 
+  - the socket is closed in blocking mode
+  - raises an exception in nonblocking mode, indicates that no data is available at the moment
+- no waiting on close if any received message can be determined
+  - e.g. fixed size message
+- call shutdown(direction) to close the unused direction or both
+  - direction = socket.SHUT_WR: shut down the outgoing direction
+    - the other end receives EOF
+  - direction = socket.SHUT_RD: shut down the incoming direction
+    - an EOF error occurs if the other side tries to write
+  - direction = socket.SHUT_RDWR: disable the socket from everyone using it if it is shared
+    - close() only ends the caller process's relationship with this shared socket
+  - unidirectional is useful in some applications
 
 
 Using TCP stream like files
 ---
+- A TCP stream is a sequential data
+  - read and write sequential data are fundamental OS operations
+  - File object supports read() and write()
+  - Socket object supports send() and recv()
+- a socket can be read and written as a normal file descriptor
 
+```python
+# socket.makefile() returns a Python file object
+# which calls recv() for reading and send() for writing
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+hasattr(sock, 'read') # => False
+
+f = sock.makefile()
+hasattr(sock, 'read') # => True
+
+fn = sock.fileno()
+print(fn)
+
+# investigate with lsof -a -i4 -itcp
+```
 
 
 Handle socket errors
