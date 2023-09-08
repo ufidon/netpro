@@ -106,6 +106,101 @@ socket.getservbyname('http') # ->80
 
 [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)
 ---
+- Transmission Control Protocol 
+- reliable, ordered, and error-checked delivery of packets
+- supports the majority of application protocols
+  - HTTP, FTP, SMTP, POP3, SSH, etc.
+
+
+How TCP works?
+---
+- every TCP packet is identified by a sequence number
+  - the initial sequence number is randomly chosen
+- next sequence number = current sequence number + current packet size in bytes
+- TCP window - bursts of packets at a time expecting a single response
+- builtin flow control
+- automatic retransmission of unacknowledged packets
+
+
+Establish and terminate TCP connection
+---
+- packet (sequence number, acknowledge number)
+- three-way (or 3-step) handshake to establish
+  - SYN (A, -), SYN-ACK (B, A+1), ACK (A+1, B+1)
+- four-way handshake to terminate
+  - FIN, ACK, FIN, ACK
+- a TCP connection (client: active or connected socket, server: passive or listening socket)
+  - e.g. (local ip : local port, remote ip : remote port)
+
+
+💡 Demo
+---
+- Show the TCP connection 
+  - establishment in three-way handshake
+  - termination in four-way handshake
+
+
+🖊️ Practice
+---
+- play with the simple [tcp server/client program](./tcp/tcp_sixteen.py)
+
+```bash
+# 1. run the client only and analyze the exception
+python3 tcp_sixteen.py client localhost
+# before send() and recv(), a TCP connection must be established first
+# compare this with UDP
+
+# 2. open two terminals, one runs server, the other runs client
+python3 tcp_sixteen.py server ""
+
+python3 tcp_sixteen.py client localhost
+python3 tcp_sixteen.py client 127.0.0.1
+
+# 3. comment out line 21 in  tcp_sixteen.py 
+# run the server in another terminal
+# analyze what happened
+python3 tcp_sixteen.py server ""
+
+# 4. bind to a specified interface
+python tcp_sixteen.py server ip
+```
+
+
+Deadlock
+---
+- can occur in TCP applications without good design
+  - TCP stack sending and receiving buffers are limited
+  - send and receive lock mutually
+- ways to solve deadlock
+  - use non-blocking mode
+  - use multiple threads
+  - use select() or poll() to handle multiple inputs
+
+
+🖊️ Practice
+---
+- try possible inputs that can put [tcp_deadlock.py](./tcp/tcp_deadlock.py) into deadlock
+
+```bash
+# open two terminals, one runs the server
+python3 tcp_deadlock.py server ""
+
+# in the other terminal, run the client
+python tcp_deadlock.py client 127.0.0.1 32
+
+# then try this, will it cause deadlock?
+# will this happen to UDP?
+ python tcp_deadlock.py client 127.0.0.1 16000000
+
+```
+
+
+Closed connections and half-open connections
+---
+
+
+Using TCP stream like files
+---
 
 
 
