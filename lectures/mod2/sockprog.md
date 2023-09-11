@@ -202,8 +202,8 @@ How to close a TCP connection?
 flowchart LR;
   E1("Endpoint1(ip1, port1)");
   E2("Endpoint2(ip2, port2)");
-  E1 -->|write -> read| E2;
-  E2 -->|read <- write| E1;
+  E1 -->|"write/send -> read/recv"| E2;
+  E2 -->|"read/recv <- write/send"| E1;
 ```
 - a socket recv() returns an empty string when 
   - the socket is closed in blocking mode
@@ -243,11 +243,6 @@ print(fn)
 
 # investigate with lsof -a -i4 -itcp
 ```
-
-
-Handle socket errors
----
-- [code](./code/hserror.py)
 
 
 ## Simple socket programs

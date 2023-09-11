@@ -11,7 +11,7 @@ Tentative topics:
 
 # Reference textbooks
 - [Foundations of Modern Networking: SDN, NFV, QoE, IoT, and Cloud](http://williamstallings.com/Network/)
-- [Foundations of Python Network Programming](https://github.com/brandon-rhodes/fopnp)
+- [FPNP: Foundations of Python Network Programming](https://github.com/brandon-rhodes/fopnp)
 - [TCP/IP Illustrated](http://www.kohala.com/start/)
 - [Hands-On Network Programming with C](https://github.com/codeplea/Hands-On-Network-Programming-with-C)
 - [Mastering-Python-Networking](https://github.com/PacktPublishing/Mastering-Python-Networking-Fourth-Edition)

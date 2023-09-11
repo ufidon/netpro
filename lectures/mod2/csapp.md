@@ -8,3 +8,18 @@ Simple client/server programs
 - simple UDP client/server programs
   - [UDP echo server](./code/udpEchoServer.py)
   - [UDP echo client](./code/udpEchoClient.py)
+
+
+Network data and network errors
+---
+- [datanerr.ipynb](./datanerr/datanerr.ipynb)
+
+
+Handle socket errors
+---
+- [code](./code/hserror.py)
+
+
+Socket names and DNS
+---
+- [dns.ipynb](./dns/dns.ipynb)
