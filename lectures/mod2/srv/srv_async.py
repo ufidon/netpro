@@ -45,6 +45,7 @@ def serve(listener):
             sock, address = sock.accept()
             print('Accepted connection from {}'.format(address))
             sock.setblocking(False)     # force socket.timeout if we blunder
+            # Could it be set as blocking mode?
             sockets[sock.fileno()] = sock
             addresses[sock] = address
             poll_object.register(sock, select.POLLIN)

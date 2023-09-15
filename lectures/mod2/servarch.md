@@ -155,13 +155,57 @@ python3 srv_async.py localhost
 python3 client.py localhost
 ```
 
+[Asyncio framework - Asynchronous I/O](https://docs.python.org/3/library/asyncio.html)
+---
+- a new framework in the PSL introduced from Python 3.4
+- provides a *standard interface* for event loops based on select(), epoll(), and similar mechanisms
+- supports two programming styles
+  - callback style
+  - coroutine style
+
+
+
 Callback-Style Asyncio
 ---
+-  lets the programmer keep up with each open client connection by means of an object instance
+- advances a client conversation using method calls on the object
+- further deferred I/O such as database I/O needs *futures* objects to provide further callbacks
+
+
+🖊️ Practice
+---
+- Play with [Asynchronous server](./srv/srv_asyncio1.py)
+
+```bash
+# open three terminals, one runs the server
+python3 srv_asyncio1.py localhost
+# in the other two terminals, run a client in each
+python3 client.py localhost
+```
 
 
 Coroutine-Style Asyncio
 ---
+- a [coroutine](https://docs.python.org/3/library/asyncio-task.html) is a function that pauses when it wants to perform I/O
+  - returning control to its caller—instead of blocking in an I/O routine itself
+  - supported by generators which have one or more yield statements
+  - generates a sequence of items instead of terminating with a single return value when called
+- asyncio takes advantage of the extended yield syntax which
+  - allows a running generator to reel off all the items yielded by another generator with the *yield from* statement
+  - allows yield to return a value to the inside of the coroutine
+  - raises an exception if the consumer demands it
 
+
+🖊️ Practice
+---
+- Play with [Asynchronous server](./srv/srv_asyncio2.py)
+
+```bash
+# open three terminals, one runs the server
+python3 srv_asyncio2.py localhost
+# in the other two terminals, run a client in each
+python3 client.py localhost
+```
 
 
 The Legacy Module Asyncore
@@ -179,3 +223,10 @@ Running Under Inetd
 
 Deployment of network applications
 ---
+
+
+# References
+- [Async IO in Python: A Complete Walkthrough](https://realpython.com/async-io-python/)
+- [Coroutines and Tasks](https://docs.python.org/3/library/asyncio-task.html)
+  - [How to Use Generators and yield in Python](https://realpython.com/introduction-to-python-generators/)
+- [Primer on Python Decorators](https://realpython.com/primer-on-python-decorators/)

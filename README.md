@@ -30,6 +30,13 @@ Tentative topics:
   - [CMPSCI 453: Computer Networks](http://www-edlab.cs.umass.edu/cs453/)
 - [Computer Networks 6e](https://computernetworksbook.com/)
 
+# Simulators
+- [Gini5](https://citelab.github.io/gini5/)
+  - [source](https://github.com/citelab/gini5)
+- [GNS3](https://www.gns3.com/)
+  - [source](https://github.com/GNS3)
+
+
 # Online resources
 - [Socket Programming in Python](https://realpython.com/python-sockets/)
 - [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)

@@ -12,6 +12,9 @@ def handle_conversation(reader, writer):
     while True:
         data = b''
         while not data.endswith(b'?'):
+            # the 'yield from' is put in front of the code that
+            # performs a blocking operation and waited for the operating system to respond
+            # this let the generator plug into the asyncio subsystem without blocking it
             more_data = yield from reader.read(4096)
             if not more_data:
                 if data:
