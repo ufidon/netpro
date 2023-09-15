@@ -3,11 +3,13 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter07/srv_async.py
 # Asynchronous I/O driven directly by the poll() system call.
 
+# [select — Waiting for I/O completion](https://docs.python.org/3/library/select.html)
 import select, zen_utils
 
 def all_events_forever(poll_object):
     while True:
         for fd, event in poll_object.poll():
+            # [Yield in Python: An Ultimate Tutorial on Yield Keyword in Python](https://www.simplilearn.com/tutorials/python-tutorial/yield-in-python)
             yield fd, event
 
 def serve(listener):

@@ -78,21 +78,104 @@ python3 -m trace -tg --ignore-dir=/usr srv_single.py ""
 ```
 
 
-## Threaded and Multiprocess Servers
-
-### The Legacy SocketServer Framework
-
-## Async Servers
-
-###  Callback-Style Asyncio
-
-### Coroutine-Style Asyncio
-
-### The Legacy Module Asyncore
-
-### The Best of Both Worlds
+Threaded and Multiprocess Servers
+---
+- serve multiple clients simultaneously
+  - by exploiting OS builtin support fo multiprocess and multithread
+  - a master thread with an accept() loop that hands off the new client sockets to  waiting queue of workers (thread pool)
+- advantage:
+  - simple: launch several copies of the single-threaded server
+  - suitable for in-house services without resourse coordination between threads
+- disadvantage:
+  - the OS concurrency mechanisms scale is limited
+  - OSes rarely scale well to thousands or more threads running concurrently
 
 
-## Running Under Inetd
+🖊️ Practice
+---
+- Play with [multithreaded server](./srv/srv_threaded.py)
 
-## Deployment of network applications
+```bash
+# open three terminals, one runs the server
+python3 srv_threaded.py localhost
+# in the other two terminals, run a client in each
+python3 client.py localhost
+```
+
+
+The Legacy *SocketServer* Framework
+---
+- built into the Python Standard Library
+- breaks into two patterns
+  - the server pattern: opens a listening socket and accept new client connections, from
+  - the handler pattern:  converses over an open socket
+- These two patterns are combined by instantiating a server object 
+  - that is given a handler class as one of its arguments
+- lets the pool of connecting clients determine how many threads to start
+  - vulnerable to DoS attack
+  - not recommended for production services
+
+🖊️ Practice
+---
+- Play with [socketserver framework](./srv/srv_legacy1.py)
+
+```bash
+# open three terminals, one runs the server
+python3 srv_legacy1.py localhost
+# in the other two terminals, run a client in each
+python3 client.py localhost
+```
+
+
+Async Servers
+---
+- hear from a whole list of waiting client sockets 
+  - respond whenever one of those clients is ready for more interaction
+- supported by two features of modern OS network stacks
+  - they supply system calls that lets a process block waiting on a whole list of client sockets
+  -  a socket can be configured as nonblocking
+     -  in nonblocking mode, send() or recv() call always return immediately
+- asynchronous means
+  -  the client code never stops to wait for a particular client 
+  -  it switches freely among all connected clients to serve
+- the system calls support asynchronous mode
+  - the POSIX (Portable Operating System Interface) call select()
+    - inefficient, not recommended
+  - modern poll() on Linux and epoll() on BSD
+
+
+🖊️ Practice
+---
+- Play with [Asynchronous server](./srv/srv_async.py)
+
+```bash
+# open three terminals, one runs the server
+python3 srv_async.py localhost
+# in the other two terminals, run a client in each
+python3 client.py localhost
+```
+
+Callback-Style Asyncio
+---
+
+
+Coroutine-Style Asyncio
+---
+
+
+
+The Legacy Module Asyncore
+---
+
+
+The Best of Both Worlds
+---
+
+
+
+Running Under Inetd
+---
+
+
+Deployment of network applications
+---

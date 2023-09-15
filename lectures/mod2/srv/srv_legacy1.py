@@ -10,6 +10,7 @@ class ZenHandler(BaseRequestHandler):
     def handle(self):
         zen_utils.handle_conversation(self.request, self.client_address)
 
+# ThreadingMixIn for multithreading, ForkingMixIn for multiprocessing
 class ZenServer(ThreadingMixIn, TCPServer):
     allow_reuse_address = 1
     # address_family = socket.AF_INET6  # uncomment if you need IPv6
