@@ -165,7 +165,7 @@ python3 client.py localhost
 
 
 
-Callback-Style Asyncio
+[Callback-Style Asyncio](https://docs.python.org/3/library/asyncio-protocol.html)
 ---
 -  lets the programmer keep up with each open client connection by means of an object instance
 - advances a client conversation using method calls on the object
@@ -210,19 +210,36 @@ python3 client.py localhost
 
 The Legacy Module Asyncore
 ---
+- two PSL modules, for backwards compatibility only
+  - asyncore: [Asynchronous socket handler](https://docs.python.org/3/library/asyncore.html)
+  - asynchat: [Asynchronous socket command/response](https://docs.python.org/3/library/asynchat.html)
+  - many socket level details are packaged (hidden)
+- For new code asyncio is recommended
 
 
-The Best of Both Worlds
+🖊️ Practice
 ---
+- Play with [Asynchronous server](./srv/srv_legacy2.py)
 
+```bash
+# open three terminals, one runs the server
+python3 srv_legacy2.py localhost
+# in the other two terminals, run a client in each
+python3 client.py localhost
+```
 
-
-Running Under Inetd
+Summary
 ---
+-  Multithreading and multiprocessing run single-threaded code without modification
+-  An asynchronous approach breaks up code into little pieces that can each run without ever blocking
+   -  A callback style wraps each unblockable code snippet inside a method
+   -  A coroutine style encloses each basic unblockable operation in between yield or yield from statements
+- An asynchronous server 
+  - can serve clients with far less expense without context switch
+  - but is limited by the capability of the OS thread since it does all of its work within a single thread
+    - overcomed by using asynchronous callback object or coroutine and launch it under an asynchronous framework
+- Deployment of servers is another big topic
 
-
-Deployment of network applications
----
 
 
 # References

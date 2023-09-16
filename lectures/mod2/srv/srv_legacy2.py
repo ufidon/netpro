@@ -3,6 +3,9 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter07/srv_legacy2.py
 # Uses the legacy "asyncore" Standard Library module to write a server.
 
+# [asyncore](https://docs.python.org/3/library/asyncore.html)
+# [asynchat](https://docs.python.org/3/library/asynchat.html)
+
 import asyncore, asynchat, zen_utils
 
 class ZenRequestHandler(asynchat.async_chat):
