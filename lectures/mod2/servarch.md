@@ -81,11 +81,11 @@ python3 -m trace -tg --ignore-dir=/usr srv_single.py ""
 Threaded and Multiprocess Servers
 ---
 - serve multiple clients simultaneously
-  - by exploiting OS builtin support fo multiprocess and multithread
+  - by exploiting OS builtin support for multiprocess and multithread
   - a master thread with an accept() loop that hands off the new client sockets to  waiting queue of workers (thread pool)
 - advantage:
   - simple: launch several copies of the single-threaded server
-  - suitable for in-house services without resourse coordination between threads
+  - suitable for in-house services without resource coordination between threads
 - disadvantage:
   - the OS concurrency mechanisms scale is limited
   - OSes rarely scale well to thousands or more threads running concurrently
