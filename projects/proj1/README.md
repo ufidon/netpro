@@ -4,13 +4,13 @@ _stage1_
 ## Description
 Design and implement a online [Rock-Paper-Scissors](https://en.wikipedia.org/wiki/Rock_paper_scissors) game consisting one server and multiple clients. Each client is a player.
 
-The server starts first and listens for clients. It can handle multiple game sessions. 
+The server starts first and listens for clients. It can handle multiple clients and multiple game sessions concurrently. 
 
-A client connects to the server, searches for players, pairs a player to start a game, play the game until get a decided result, or quit the game, lookup history records of all game sessions. Each player can play multiple sessions in one connection.
+A client connects to the server, searches for players, pairs a player to start a game session, play the game until get a decided result, or quit the game, lookup history records of all game sessions. Each player can play multiple sessions in one connection.
 
 In each execution, the server records the information below:
 - date and time
-- game session number
+- game session number and lasting time
 - all players' information such as ip address, port number, player id, player game session and result
 - paired players, game sessions and results (terminated or reach a decision)
 
