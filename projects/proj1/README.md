@@ -19,6 +19,7 @@ In each execution, the server records the information below:
 Justify your selection and answers for all the questions.
 
 - Which server architecture will you select? 
+- What communication protocol is needed? How to design it?
 - Which message framing scheme will you select?
 - What data structures will you use? 
 - How to divide the game logic between the clients and the server?
@@ -26,7 +27,9 @@ Justify your selection and answers for all the questions.
 - What information needs to be recorded and how?
 - How to save the records for persistence?
 - How to modularize and organize the game?
+- How to handle exceptions?
 - How to test the game?
+
 
 Your ideas and answers to these questions form the design of the game.
 
@@ -52,3 +55,7 @@ The Rock-Paper-Scissors game can be extended to include multiple players (more t
 - [Program Your First Multiple User Network Game in Python](https://levelup.gitconnected.com/program-your-first-multiple-user-network-game-in-python-9f4cc3650de2)
   - [Online Rock Paper Scissors p.2](https://www.techwithtim.net/tutorials/python-online-game-tutorial/online-rock-paper-scissors-p-2)
 - [Rock Paper and Scissor Game Using Tkinter](https://www.geeksforgeeks.org/rock-paper-and-scissor-game-using-tkinter/)
+- Install tkinter
+  ```bash
+  sudo apt install python3-tk
+  ```
