@@ -38,6 +38,7 @@ def describe(ssl_sock, hostname, server=False, debug=False):
         say('Name(s) on peer certificate', *names or ['none'])
         if (not server) and names:
             try:
+                # Hostname matching is now performed by OpenSSL since Python 3.7+
                 ssl.match_hostname(cert, hostname)
             except ssl.CertificateError as e:
                 message = str(e)
