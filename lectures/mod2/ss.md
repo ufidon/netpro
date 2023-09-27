@@ -80,7 +80,7 @@ python3 safe_tls.py -a ca.crt localhost 1060
 
 # 3. use wireshark to capture and analyze the whole communication
 # or with tcpdump
-tcpdump -n port 1060 -i lo –X
+tcpdump -n port 1060 -i lo -X
 ```
 
 
