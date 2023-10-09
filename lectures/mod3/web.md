@@ -2,4 +2,4 @@
 
 - [HTTP clients](./httpclient.ipynb)
 - [HTTP servers](./httpserver.md)
-- [The World Wide Web](./www.md)
+- [The World Wide Web](./www.ipynb)
