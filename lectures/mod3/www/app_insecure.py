@@ -4,12 +4,27 @@
 # A poorly-written and profoundly insecure payments application.
 # (Not the fault of Flask, but of how we are choosing to use it!)
 
+# The application uses the Flask web framework to take care of 
+# the basics of operating as a Python web application:
+# 1. answering 404 for pages that the application does not define, 
+# 2. parsing data from HTML forms  
+# 3. making it easy to compose correct HTTP responses containing 
+# either HTML text from one of its templates or a redirect to another URL
+# 4. styling documents with Jinja2
+
+# The weaknesses are all mistakes in its data processing
+
 import bank
 from flask import Flask, redirect, request, url_for
 from jinja2 import Environment, PackageLoader
 
 app = Flask(__name__)
 get = Environment(loader=PackageLoader(__name__, 'templates')).get_template
+
+# logging in and logging out is 
+# the creation and deletion of a cookie
+# when present in subsequent requests, marks them as
+# belonging to a particular authenticated user
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -27,6 +42,10 @@ def logout():
     response = redirect(url_for('login'))
     response.set_cookie('username', '')
     return response
+
+# The following two pages protect themselves from unauthorized users 
+# both by looking for the cookie and
+# redirecting back to the login page without a correct value
 
 @app.route('/')
 def index():

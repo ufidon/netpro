@@ -51,7 +51,7 @@ WSGI ( Web Server Gateway Interface)
 
 Asynchronous Server-Frameworks 
 ---
-- WSGI is sychronous in nature
+- WSGI is synchronous in nature
   - to support asynchronous, try [uWSGI asynchronous/non-blocking modes](https://uwsgi-docs.readthedocs.io/)
 - to write a HTTP service using a specific async engine like asyncio or [Tornado](https://www.tornadoweb.org/) or [Twisted](https://twisted.org/)
   - compatible HTTP server and the framework must be used
@@ -114,7 +114,7 @@ flowchart LR
   - [Gunicorn 'Green Unicorn' — A Python WSGI HTTP Server](https://gunicorn.org/)
   - [CherryPy — A Minimalist Python Web Framework](https://docs.cherrypy.dev/)
   - [wsgiref — WSGI Utilities and Reference Implementation](https://docs.python.org/3/library/wsgiref.html)
-- **A2**: Run Apache with mod_wsgi configured to run your Python code inside of a separate WSGIDaemonProcess. Tyically,
+- **A2**: Run Apache with mod_wsgi configured to run your Python code inside of a separate WSGIDaemonProcess. Typically,
   - Apache handles static content
   - mod_wsgi handles dynamic content with Python
 - **A3**: Run a Python HTTP server like Gunicorn behind a web server that
@@ -136,7 +136,7 @@ WSGI Without a Framework
     - invoke WSGI callables for HTTP requests
     - the WSGI callables can be coded directly or plugged into web frameworks
   - web frameworks
-    - dipatch HTTP requests and handle abnormal requests default such as
+    - dispatch HTTP requests and handle abnormal requests default such as
       - 404 Not Found
       - 405 Method Not Allowed
       - 501 Not Implemented
