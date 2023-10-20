@@ -9,10 +9,13 @@
 # 1. answering 404 for pages that the application does not define, 
 # 2. parsing data from HTML forms  
 # 3. making it easy to compose correct HTTP responses containing 
-# either HTML text from one of its templates or a redirect to another URL
+#   either HTML text from one of its templates 
+#   or a redirect to another URL
 # 4. styling documents with Jinja2
 
 # The weaknesses are all mistakes in its data processing
+# so HTTPS will not help, why?
+# vulnerable to many of the most important attack vectors 
 
 import bank
 from flask import Flask, redirect, request, url_for
@@ -28,6 +31,7 @@ get = Environment(loader=PackageLoader(__name__, 'templates')).get_template
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # request.form.get returns a default of '' if a key is missing
     username = request.form.get('username', '')
     password = request.form.get('password', '')
     if request.method == 'POST':
@@ -52,7 +56,13 @@ def index():
     username = request.cookies.get('username')
     if not username:
         return redirect(url_for('login'))
+    # pulls the current user’s payments from the database
     payments = bank.get_payments_of(bank.open_database(), username)
+
+    # fill the template index.html
+    # a flash message displayed at the top of the page 
+    # to show intermediary operation results
+    # such as http://example.com/?flash=Payment+successful
     return get('index.html').render(payments=payments, username=username,
         flash_messages=request.args.getlist('flash'))
 
