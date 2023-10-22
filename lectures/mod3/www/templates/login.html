@@ -2,6 +2,7 @@
 {% block title %}Please log in{% endblock %}
 {% block body %}
 <form method="post">
+  <!-- this {{ username }} substitution avoid retyping username in case of wrong password -->
   <label>User: <input name="username" value="{{ username }}"></label>
   <label>Password: <input name="password" type="password"></label>
   <button type="submit">Log in</button>

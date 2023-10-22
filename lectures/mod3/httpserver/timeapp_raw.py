@@ -17,10 +17,8 @@ def app(environ, start_response):
     host = environ.get('HTTP_HOST', '127.0.0.1')
     path = environ.get('PATH_INFO', '/')
     if ':' in host:
-        yield host.encode('utf-8')
         host, port = host.split(':', 1)
     if '?' in path:
-        yield path.encode('utf-8')
         path, query = path.split('?', 1)
     headers = [('Content-Type', 'text/plain; charset=utf-8')]
     if environ['REQUEST_METHOD'] != 'GET':

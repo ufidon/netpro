@@ -11,12 +11,14 @@ ROW = '{:>12}  {}'
 
 def download_page_with_requests(base):
     session = requests.Session()
+    # the authentication needs to be supplied manually
     response = session.post(urljoin(base, '/login'),
                             {'username': 'brandon', 'password': 'atigdng'})
     assert response.url == urljoin(base, '/')
     return response.text
 
 def download_page_with_selenium(base):
+    # broken: https://bugs.launchpad.net/bugs/2025268
     browser = webdriver.Firefox()
     browser.get(base)
     assert browser.current_url == urljoin(base, '/login')

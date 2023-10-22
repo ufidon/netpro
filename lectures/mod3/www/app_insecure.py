@@ -87,5 +87,6 @@ def pay():
                                   dollars=dollars, memo=memo)
 
 if __name__ == '__main__':
+    # enabled debug mode can restart Flask and reload the application for updates
     app.debug = True
     app.run()
