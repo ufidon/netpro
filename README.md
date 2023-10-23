@@ -31,6 +31,7 @@ Tentative topics:
 - [Computer Networks 6e](https://computernetworksbook.com/)
 
 # Simulators
+- [Mininet](http://docs.mininet.org/)
 - [Gini5](https://citelab.github.io/gini5/)
   - [source](https://github.com/citelab/gini5)
 - [GNS3](https://www.gns3.com/)
