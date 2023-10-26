@@ -4,11 +4,26 @@ FPNP3e ch12
 
 A big picture
 ---
+- [Electronic mail (email or e-mail)](https://en.wikipedia.org/wiki/Email) is a method of transmitting and receiving messages using electronic devices
+- The lifespan of an email
+  - A sender $S$ submit an email $e$ by the *Simple Mail Transport Protocol (SMTP:25)* to an email server $S_s$
+    - SMTP Secure (SMTPS) uses port number 587
+      - Port 465 is also used sometimes but outdated
+  - $e$ is delivered from $S_s$ through a serials of intermediary email servers $S_{m_i}$ to the receiver $R$'s email server $S_r$
+  - $R$ accesses $e$ from $S_r$ through the *Post Office Protocol v3 (POP3:110)* or the *Internet Message Access Protocol (IMAP:143)* using email clients such as
+    - Mozilla Thunderbird, Microsoft Outlook
+    - webmail services are prevalent today which let users
+      - log on the email server with a web browser 
+      - view their emails rendered as HTML 
+      - the e-mails remain on the email server
+    - the secured versions of POP3 and IMAP are *POP3S:995* and *IMAPS:993* respectively
 
-IMAP-143
-IMAPS-993
-POP3-110
-POP3S-995
+
+💡 Explore
+---
+- [The lifespan of an email](https://en.wikipedia.org/wiki/Email)
+
+
 
 🔭 Explore Email servers
 ---
@@ -34,8 +49,8 @@ sudo apt install dovecot-imapd dovecot-pop3d
 # test installation
 sudo systemctl status dovecot
 ss -l lpt # lnpt
-telnet pop3
-telnet imap2
+telnet localhost pop3
+telnet localhost imap2
 openssl s_client -connect localhost:993 # imaps
 openssl s_client -connect localhost:995 # pop3s
 
@@ -52,6 +67,8 @@ Subject: Test email
 Hello? How are you?
 CTRL+D
 ```
+
+
 
 
 E-Mail Message Format 
