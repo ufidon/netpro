@@ -115,9 +115,75 @@ E-Mail
   - [examples](https://docs.python.org/3/library/email.examples.html)
 
 
-Adding HTML and Multimedia 
-Adding Content 
-Parsing E-Mail Messages 
+Adding HTML and Multimedia
+---
+- [Multipurpose Internet Mail Extensions (MIME)](https://en.wikipedia.org/wiki/MIME) extends the format of email messages to support 
+  - text in character sets other than ASCII
+  - attachments of audio, video, images, and application programs
+  - Message bodies may consist of *multiple parts*, each part 
+    - has its own headers, and a body with its own content type and encoding
+    - is preceded with two hyphens
+    - may have subparts forming a hierarchy
+
+Steps to build a MIME message
+---
+- build several *email.message.MIMEPart* objects
+  - using the same interface as an *EmailMessage*
+- *attach()* them to their parent part or message
+  ```python
+  aMessage.attach(aPart)
+  ```
+- *set_content()* installs the main message body
+- *add_related()* supplements the main content with optional other resources
+  - usually main content of HTML needs images, CSS style sheets, and JavaScript files 
+  - Each related resource should have a Content-Id (cid) for reference
+- *add_alternative()* provides optional other renderings of email message such as
+  - a plain-text alternative rendering for less-capable e-mail clients
+- *add_attachment()* adds optional attachments 
+
+
+💡 Demo
+---
+- [Building a MIME-Powered E-Mail with HTML, an Inline Image, and Attachments](./email/build_mime_email.py)
+  ```bash
+  # find the hierarchies of all the generated email messages
+  python3 build_mime_email.py
+
+  # add attachments
+  python3 build_mime_email.py attachment.txt attachment.gz
+
+  # include image
+  python3 build_mime_email.py -i
+
+  # include image and add attachments
+  python3 build_mime_email.py -i attachment.txt attachment.gz
+  ```
+
+
+🔭 Explore 
+---
+- [Adding content to an email message](https://docs.python.org/3/library/email.message.html#email.message.EmailMessage) with
+  - *set_content(), add_related(), add_alternative(), add_attachment()*
+
+
+Two methods parsing email messages
+---
+- An email message may have a body and attachments of MIME
+- Two parsing methods
+  1. parse with EmailMessage methods
+  2. visit all of its parts and subparts 
+
+
+💡 Demo
+---
+- [Asking EmailMessage for the Body and Attachments](./email/display_email.py)
+  ```bash
+  # generate an email message
+  python3 build_mime_email.py -i attachment.txt attachment.gz > email.txt
+  # parse the email
+  python3 display_email.py email.txt
+  ```
+
 Walking MIME Parts 
 Header Encodings 
 Parsing Dates 

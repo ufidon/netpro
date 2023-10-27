@@ -32,6 +32,7 @@ def main():
     # set_content() and as_bytes() ensured that 
     # the e-mail message was properly terminated with a newline
     message.set_content(text)
+    # no related resources, no alternative rendering, no attachment
     sys.stdout.buffer.write(message.as_bytes())
 
 if __name__ == '__main__':
