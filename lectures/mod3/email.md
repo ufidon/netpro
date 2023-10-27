@@ -44,6 +44,11 @@ A big picture
     - [How to use Sendmail](https://help.dreamhost.com/hc/en-us/articles/216687518-How-to-use-Sendmail)
 
 ```bash
+# 0. default certificate 
+sudo apt-get install ssl-cert
+sudo make-ssl-cert generate-default-snakeoil
+sudo usermod --append --groups ssl-cert $USER
+
 # 1. install dovecot
 sudo apt install dovecot-imapd dovecot-pop3d
 # test installation
@@ -62,6 +67,8 @@ sudo apt install postfix # choose local only
 # 3. sendmail
 # create a new user
 sudo adduser emailuser1
+sudo adduser trump
+sudo adduser biden
 
 # send an email to the new user
 sendmail emailuser1@localhost
@@ -101,8 +108,9 @@ E-Mail
 - Popular [email headers](https://en.wikipedia.org/wiki/Email#Message_header)
 
 
-Building an E-Mail Message
+💡 Demo 
 ---
+- [An Example: Building an E-Mail Message](./email/build_basic_email.py)
 - using the [email](https://docs.python.org/3/library/email.html) package
   - [examples](https://docs.python.org/3/library/email.examples.html)
 
