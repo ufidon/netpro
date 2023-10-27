@@ -184,9 +184,34 @@ Two methods parsing email messages
   python3 display_email.py email.txt
   ```
 
-Walking MIME Parts 
-Header Encodings 
-Parsing Dates 
+Steps to disassemble a MIME e-mail
+---
+1. *is_multipart()* determines wether the MIME part contains subparts
+  - get_content_type(), get_content_maintype(), get_content_subtype()* determine the fully qualified type
+2. *iter_parts()* loops over the subparts of a multipart
+3. check the Content-Disposition header of a normal part to see wether it is an attachment
+4. *get_content()* decodes and returns the data from inside a MIME as a text *str* or binary *bytes*
+
+
+💡 Demo
+---
+- [Visiting Every Part of a Multipart Method Manually](./email/display_structure.py)
+  - Each part is indexed for future retrieving
+    ```python
+    # get the GIF Image from the message
+    gif = message.get_payload(0).get_payload(0).get_payload(1)
+    ```
+
+Header Encodings
+---
+- the email module can handle internationalized headers encoded using the conventions of [RFC 2047](https://datatracker.ietf.org/doc/html/rfc2047) 
+  ```python
+  # generate an email with unicode
+  python3 build_unicode_email.py > umail.txt
+
+  # display the email
+  python3 display_email.py umail.txt
+  ```
 
 # References
 - [Install mail servers](https://www.server-world.info/en/note?os=Ubuntu_22.04&p=mail&f=1)
