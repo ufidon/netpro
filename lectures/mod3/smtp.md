@@ -250,3 +250,7 @@ SMTP Tips
 - The *sendmail()* function raises an exception if any of the recipients failed
 - SSL/TLS is insecure without certificate validation
 - Python’s smtplib is not meant to be a general-purpose e-mail relay
+
+
+# References
+- [The Spamhaus Project tracks email spammers and spam-related activity](https://www.spamhaus.org/)
