@@ -1,5 +1,5 @@
 # A network-wide Rock-Paper-Scissors
-_stage1_
+_stage1: socket programming_
 
 ## Description
 Design and implement a online [Rock-Paper-Scissors](https://en.wikipedia.org/wiki/Rock_paper_scissors) game consisting one server and multiple clients. Each client is a player.

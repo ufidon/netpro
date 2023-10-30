@@ -1,5 +1,5 @@
 # A network-wide Rock-Paper-Scissors
-_stage2_
+_stage2: web programming_
 
 ## Description
 Design and implement a online [Rock-Paper-Scissors](https://en.wikipedia.org/wiki/Rock_paper_scissors) game using *browser-server (BS) structure*. Each client is a player.
