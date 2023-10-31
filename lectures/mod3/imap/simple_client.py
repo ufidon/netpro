@@ -14,7 +14,8 @@ def main():
         sys.exit(2)
 
     hostname, username = sys.argv[1:]
-    c = IMAPClient(hostname, ssl=True)
+    # c = IMAPClient(hostname, ssl=True)
+    c = IMAPClient(hostname, ssl=False)
     try:
         c.login(username, getpass.getpass())
     except c.Error as e:
@@ -48,7 +49,8 @@ def explore_account(c):
 
 def explore_folder(c, name):
     """List the messages in folder `name` and let the user choose one."""
-
+    # keyError
+    # https://stackoverflow.com/questions/60540927/python-dict-keyerror-rfc822-imapclient-for-gmail
     while True:
         c.select_folder(name, readonly=True)
         msgdict = c.fetch('1:*', ['BODY.PEEK[HEADER.FIELDS (FROM SUBJECT)]',

@@ -36,8 +36,14 @@ def print_summary(c, foldername):
     #  PEEK indicates that you are just looking inside the message to build a summary, 
     # and that you do not want the server to set the \Seen flag automatically on all of 
     # these messages
+
+    #  The range '1:*' means “the first message through the end of the mail folder,” 
+    # because message IDs—whether temporary or UIDs—are always positive integers.
     
     msgdict = c.fetch('1:*', ['BODY.PEEK[]'])
+
+    # The dictionary that is returned maps message UIDs to dictionaries 
+    # giving information about each message. 
     for message_id, message in list(msgdict.items()):
         e = email.message_from_string(message['BODY[]'])
         print(message_id, e['From'])
