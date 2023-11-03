@@ -509,15 +509,214 @@ class ResultsView(generic.DetailView):
 
 Part 5: automated testing
 ---
+- saves development time
+- identifies and prevent problems
+- make code more attractive
+- helps teams work together
+
+
+test-driven development
+---
+- a bug in the app polls
+  ```python
+  # python manage.py shell
+  import datetime
+  from django.utils import timezone
+  from polls.models import Question
+
+  future_question = Question(pub_date=timezone.now() + datetime.timedelta(days=30))
+  future_question.was_published_recently() # => True
+  ```
+- Create a test to expose the bug
+  ```python
+  # polls/tests.py
+  import datetime
+  from django.test import TestCase
+  from django.utils import timezone
+
+  from .models import Question
+
+  class QuestionModelTests(TestCase):
+    def test_was_published_recently_with_future_question(self):
+      """
+      was_published_recently() returns False for questions whose pub_date
+      is in the future.
+      """
+      time = timezone.now() + datetime.timedelta(days=30)
+      future_question = Question(pub_date=time)
+
+  self.assertIs(future_question.was_published_recently(), False)
+  ```
+- Run test
+  ```bash
+  python manage.py test polls
+  ```
+- Fix the bug and run the test again
+  ```python
+  # polls/models.py
+  def was_published_recently(self):
+    now = timezone.now()
+    return now - datetime.timedelta(days=1) <= self.pub_date <= now
+  ```
 
 
 Part 6: manage static files
 ---
+- static files include images, JavaScript, or CSS, etc.
+- *django.contrib.staticfiles* collects static files from all applications into a single location
+- create a folder to hold the app's static files
+  - polls/static/polls/
+- style sheet example
+  ```css
+  /* polls/static/polls/style.css */
+  /* 1. set the color for list item link */
+  li a {
+    color: green;
+  }
+  /* background image */
+  body {
+    background: white url("images/background.png") no-repeat;
+  }
+  ```
+  - use the style sheet
+    ```html
+    <!-- polls/templates/polls/index.html -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+    ```
+
 
 
 Part 7: customize the admin form
 ---
+- change options when registering models
+  - overload admin.ModelAdmin
+  ```python
+  # polls/admin.py
+  from django.contrib import admin
+  from .models import Question
+  # 1. reorder fields of Question admin
+  class QuestionAdmin1(admin.ModelAdmin):
+    fields = ["pub_date", "question_text"]
+  # 2. split the form up into fieldsets
+  class QuestionAdmin1(admin.ModelAdmin):
+    fieldsets = [
+      (None, {"fields": ["question_text"]}),
+      ("Date information", {"fields": ["pub_date"]}),
+    ]
+
+  # choose one customization
+  admin.site.register(Question, QuestionAdmin1)
+  ```
+- add related objects in two ways
+  - ex. a Question has multiple Choices
+  ```python
+  # polls/admin.py
+  from django.contrib import admin
+  from .models import Choice, Question
+
+  # way 1: register Choice with the admin as well
+  # Django knows that a ForeignKey should be represented 
+  # in the admin as a <select> box
+  admin.site.register(Choice)
+
+  # way 2: overload admin.ModelAdmin
+  # admin.StackedInline: stack view
+  # admin.TabularInline: tabular view
+  class ChoiceInline(admin.StackedInline):
+    model = Choice
+    extra = 3 # three slots for related Choices
+
+  class QuestionAdmin(admin.ModelAdmin):
+    fieldsets = [
+      (None, {"fields": ["question_text"]}),
+      ("Date information", {"fields": ["pub_date"], "classes": ["collapse"]}),
+    ]
+    
+    inlines = [ChoiceInline]
+
+  admin.site.register(Question, QuestionAdmin)
+  ```
+- customize the admin change list
+```python
+# polls/admin.py
+# display individual fields
+class QuestionAdmin(admin.ModelAdmin):
+  # ...
+  list_display = ["question_text", "pub_date", "was_published_recently"]
+  # add a “Filter” sidebar to filter the change list by the pub_date field
+  list_filter = ["pub_date"]
+  # adds a search box at the top of the change list
+  search_fields = ["question_text"]
+```
+
+```python
+# polls/models.py
+# the method "was_published_recently" will be shown as "was published recently"
+# this can be improved using the display() decorator on that method in the models file
+from django.contrib import admin
+class Question(models.Model):
+  # ...
+  @admin.display(
+    boolean = True,
+    ordering = 'pub_date,
+    description = 'Published recently?',
+  )
+  def was_published_recently(self):
+    now = timezone.now()
+    return now - datetime.timedelta(days=1) <= self.pub_date <= now
+```
+- Customize the admin look and feel
+  - by Django’s template system
+  ```python
+  # mysite/settings.py
+  TEMPLATES = [
+    {
+      "BACKEND": "django.template.backends.django.DjangoTemplates",
+      # create folder mysite/templates first
+      "DIRS": [BASE_DIR / "templates"],
+      "APP_DIRS": True,
+      "OPTIONS": {
+        "context_processors": [
+            "django.template.context_processors.debug",
+            "django.template.context_processors.request",
+            "django.contrib.auth.context_processors.auth",
+            "django.contrib.messages.context_processors.messages",
+        ],
+      },
+    },
+  ]
+  ```
+  - modify the admin templates
+    ```bash
+    # create a directory called admin inside template
+    # find the Django source files
+    python -c "import django; print(django.__path__)"
+    # copy django/contrib/admin/templates/base_site.html into that folder
+    ```
+
+    ```html
+    <!-- mysite/templates/admin/base_site.html -->
+    {% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">Polls Administration</a></h1>
+    {% endblock %}
+    
+    <!--
+      This can be achieved by the django.contrib.admin.AdminSite.site_header attribute 
+    -->
+    ```
+- Customizing an application’s templates to make it portable across projects
+- Customize the admin index page
+  - the Django admin index page displays all the apps in INSTALLED_APPS by default
+  - can be customized with template mysite/templates/admin/index.html
 
 
 Part 8: integrate third-party packages
 ---
+- Find [Django packages](https://djangopackages.org/)
+- [Django Debug Toolbar](https://django-debug-toolbar.readthedocs.io/) is a useful tool for debugging Django web applications
+  ```bash
+  # install Django Debug Toolbar
+  python -m pip install django-debug-toolbar
+  ```
+  - [several setup steps](https://django-debug-toolbar.readthedocs.io/en/latest/installation.html) are required
