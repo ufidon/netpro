@@ -174,6 +174,10 @@ Things Are Different in a Terminal
 
 🖊️ Practice
 ---
+- [Install telnet service on Parrot Linux](https://manpages.ubuntu.com/manpages/lunar/en/man8/in.telnetd.8.html)
+  ```bash
+  sudo apt install telnetd
+  ```
 - [Logging Into a Remote Host Using Telnet](./rlogin/telnet_login.py)
   - interact in a receive-and-send pattern
   - [two methods](https://docs.python.org/3/library/telnetlib.html) for waiting for a string to arrive
@@ -225,6 +229,10 @@ SSH Host Keys
 🖊️ Practice
 ---
 - ssh from SEED to Parrot Linux
+  - [install OpenSSH Server](https://ubuntu.com/server/docs/service-openssh)
+    ```bash
+    sudo apt install openssh-server openssh-client
+    ```
 - [linuxserver/openssh-server](https://hub.docker.com/r/linuxserver/openssh-server)
 - connect to Parrot Linux with [*paramiko*]((https://www.paramiko.org/) implements)
   ```python
