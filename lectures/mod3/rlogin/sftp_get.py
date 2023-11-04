@@ -3,7 +3,7 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter16/sftp_get.py
 # Fetching files with SFTP
 
-import argparse, functools, paramiko
+import argparse, functools, paramiko, getpass
 
 class AllowAnythingPolicy(paramiko.MissingHostKeyPolicy):
     def missing_host_key(self, client, hostname, key):
@@ -12,7 +12,7 @@ class AllowAnythingPolicy(paramiko.MissingHostKeyPolicy):
 def main(hostname, username, filenames):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(AllowAnythingPolicy())
-    client.connect(hostname, username=username)  # password='')
+    client.connect(hostname, username=username)  # password=getpass.getpass())
 
     def print_status(filename, bytes_so_far, bytes_total):
         percent = 100. * bytes_so_far / bytes_total

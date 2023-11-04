@@ -3,7 +3,7 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter16/ssh_simple.py
 # Using SSH like Telnet: connecting and running two commands
 
-import argparse, paramiko, sys
+import argparse, paramiko, sys, getpass
 
 class AllowAnythingPolicy(paramiko.MissingHostKeyPolicy):
     def missing_host_key(self, client, hostname, key):
@@ -12,7 +12,8 @@ class AllowAnythingPolicy(paramiko.MissingHostKeyPolicy):
 def main(hostname, username):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(AllowAnythingPolicy())
-    client.connect(hostname, username=username)  # password='')
+    
+    client.connect(hostname, username=username)  # password=getpass.getpass())
 
     channel = client.invoke_shell()
     stdin = channel.makefile('wb')

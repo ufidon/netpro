@@ -3,7 +3,7 @@
 # https://github.com/brandon-rhodes/fopnp/blob/m/py3/chapter16/ssh_commands.py
 # Running three separate commands, and reading three separate outputs
 
-import argparse, paramiko
+import argparse, paramiko, getpass
 
 class AllowAnythingPolicy(paramiko.MissingHostKeyPolicy):
     def missing_host_key(self, client, hostname, key):
@@ -12,7 +12,7 @@ class AllowAnythingPolicy(paramiko.MissingHostKeyPolicy):
 def main(hostname, username):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(AllowAnythingPolicy())
-    client.connect(hostname, username=username)  # password='')
+    client.connect(hostname, username=username)  # password=getpass.getpass())
 
     for command in 'echo "Hello, world!"', 'uname', 'uptime':
         stdin, stdout, stderr = client.exec_command(command)

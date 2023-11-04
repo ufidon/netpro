@@ -187,15 +187,149 @@ Things Are Different in a Terminal
 [SSH: The Secure Shell](https://en.wikipedia.org/wiki/Secure_Shell)
 ---
 - used for secure remote shell, file transfer, and port forwarding
+- descended from
+  - rlogin: remote login
+  - rsh: remote shell
+  - rcp: remote file copy
 - runs atop tcp with default port number 22
+- supports multiplexing in one SSH socket by its own scheme
+  - establishes multiple channels identified by channel IDs
+  - amortizes the time for host key negotiation and authentication
 - defined in a series of [rfcs](https://www.openssh.com/specs.html)
-- Python library [Paramiko](https://www.paramiko.org/) implements both client and server functionality according to SSHv2 protocol
+- The third-party Python library [Paramiko](https://www.paramiko.org/) implements both client and server functionality according to SSHv2 protocol
   - Exceptions: socket.error, socket.gaierror, paramiko.SSHException
 
 
-- An Overview of SSH  
-- SSH Host Keys  
-- SSH Authentication  
-- Shell Sessions and Individual Commands  
-- SFTP: File Transfer Over SSH  
-- Other Features  
+The Channels supported by SSH
+---
+- interactive remote shell session
+- individual execution of a single command
+- file transfer session letting you browse the remote filesystem
+- port forwarding session that intercepts TCP connections
+
+
+SSH Host Keys
+---
+- random unsigned public-private key pairs without the burden of PKI
+- two ways to [distribute keys](https://www.baeldung.com/linux/ssh-known_hosts-ignore-emporarily)
+  - manual distribution: 
+    - collect all host public keys 
+    - save the collected keys in a ssh_know_hosts file 
+    - copy ssh_know_hosts to the folder /etc/ssh/ on every system needed
+  - first-time acceptance:
+    - let SSH client memorize the remote host keys during the first connection
+      - Fatal exception will be raised for subsequent connection with a different key
+    - usually these keys are saved in file ~/.ssh/known_hosts
+
+
+🖊️ Practice
+---
+- ssh from SEED to Parrot Linux
+- [linuxserver/openssh-server](https://hub.docker.com/r/linuxserver/openssh-server)
+- connect to Parrot Linux with [*paramiko*]((https://www.paramiko.org/) implements)
+  ```python
+  import paramiko
+  client = paramiko.SSHClient()
+  client.connect('ParrotIP', username='parrot') # exception raised
+
+  # 2. behave like normal ssh command
+  client.load_system_host_keys()
+  client.load_host_keys('/home/seed/.ssh/known_hosts')
+  client.connect('ParrotIP', username='parrot')
+
+  # 3. handle unknown hosts by subclassing MissingHostKeyPolicy
+  class AllowAnythingPolicy(paramiko.MissingHostKeyPolicy):
+    def missing_host_key(self, client, hostname, key):
+      return
+
+  client.set_missing_host_key_policy(AllowAnythingPolicy())
+  client.connect('ParrotIP', username='parrot') 
+  ```
+
+
+🔭 Explore
+---
+- [Paramiko SSH client & key policies](https://docs.paramiko.org/en/latest/api/client.html)
+  - paramiko.RejectPolicy
+    - Connecting to hosts with unknown keys simply raises an exception
+  - paramiko.AutoAddPolicy
+    - Host keys are automatically added to your user host key store when first encountered
+    - but any change in the host key from then on will raise a fatal exception
+  - paramiko.WarningPolicy
+    - An unknown host causes a warning to be logged, but the
+connection is allowed to proceed
+
+
+SSH Authentication
+---
+- three ways to prove your identity to a remote server
+  - $W_1$: provide a pair of username and password
+  - $W_2$: public-key authentication provides a username and then let the client perform a public-key challenge-response
+  - $W3$: resort to [Single sign-on (SSO)](https://en.wikipedia.org/wiki/Single_sign-on) such as [Kerberos](https://en.wikipedia.org/wiki/Kerberos_(protocol))
+  - no passwords needed for the last two ways
+
+
+🖊️ Practice
+---
+- SSH authentication with parakimo
+```python
+# 1. w1
+client.connect('ParrotIP', username='parrot', password='GoodPassword')
+
+# 2. w2
+# 2.1 setup the public key
+# use ssh-keygen to generate a key pair
+# copy ~/.ssh/id_rsa.pub to parrot@ParrotIP with ssh-copy-id
+# ssh-copy-id -i ~/.ssh/id_rsa.pub parrot@ParrotIP
+# or append the public key to your “authorized hosts” file on the remote end
+# typically named as: /home/yourname/.ssh/authorized_keys
+# normal access right requirements: chmod 0700 .ssh; chmod 0600 .ssh/*
+
+# 2.2 connect to the remote server
+client.connect('ParrotIP')
+client.connect('ParrotIP', key_filename='path to your public key file')
+```
+
+
+🖊️ Practice
+---
+- [Running an Interactive Shell Under SSH](./rlogin/ssh_simple.py)
+  - a connected SSH client set up a raw shell session running on the remote end inside a pseudoterminal
+- [Running Individual SSH Commands](./rlogin/ssh_commands.py)
+  - similar to subprocess but runs remotely
+- in either case above, a new *SSH channel* is created behind the scenes to 
+  - provide the filelike Python objects that let you talk to 
+  - the remote command’s standard input, output, and error streams
+- [SSH Channels Run in Parallel](./rlogin/ssh_threads.py)
+  - with multithreading
+
+
+[SSH File Transfer Protocol (SFTP)](https://en.wikipedia.org/wiki/SSH_File_Transfer_Protocol)
+---
+- supports complete operations on remote file systems
+  - with commands *sftp, scp*
+  - with [paramiko.SFTPClient](https://docs.paramiko.org/en/latest/api/sftp.html)
+- even can mount the remote fs locally with [sshfs](https://en.wikipedia.org/wiki/SSHFS)
+- there is no shell expansion on file names passed across SFTP
+  - can be done manually with [fnmatch](https://docs.python.org/3/library/fnmatch.html)
+
+
+🖊️ Practice
+---
+- [Listing a Directory and Fetching Files with SFTP](./rlogin/sftp_get.py)
+  ```bash
+  python3 sftp_get.py remoteMachine remoteAccount file1 file2 filen
+  ```
+
+
+Port forwarding and remote X11 sessions
+---
+- can be exploited by SSHClient's [transport object](https://docs.paramiko.org/en/latest/api/transport.html)
+  ```python
+  transport = client.get_transport()
+  ```
+
+🔭 Explore
+---
+- [paramiko demos on port forwarding](https://github.com/paramiko/paramiko/tree/main/demos)
+- [SSH/OpenSSH/PortForwarding](https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding)
