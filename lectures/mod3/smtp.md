@@ -46,7 +46,7 @@ The Rise of email Clients
 - the clients download emails from servers through
   - Post Office Protocol (POP)
     - the read email is deleted from the server by default
-    - the default mode is usually turned of to leave the email on the server
+    - the default mode is usually turned off to leave the email on the server
   - Internet Message Access Protocol (IMAP)
     - leaves emails on the server
     - emails can be arranged in folders on the server
