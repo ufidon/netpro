@@ -180,6 +180,13 @@ You may follow any one of the 6 options below to install an `Ubuntu/Linux enviro
 - Verify that Ubuntu boots correctly and that you can log into the desktop environment.
 
 ---
+### **Update**
+
+After installation, open a terminal and run the commands below to update the new system
+```bash
+sudo apt update
+sudo apt full-upgrade
+```
 
 ### **Conclusion**
 
@@ -222,9 +229,10 @@ After installing Ubuntu, perform the following tasks to set up your Python devel
      ```
 
 5. **Install Jupyter Lab:**
-   - Jupyter Lab is a web-based interactive development environment for Jupyter notebooks:
+   - Jupyter Lab is a web-based interactive development environment for [Jupyter notebooks](https://jupyter.org/install):
      ```bash
      pip3 install jupyterlab
+     pip install notebook
      ```
 
 6. **Verify the Installation:**
@@ -238,6 +246,10 @@ After installing Ubuntu, perform the following tasks to set up your Python devel
    - Launch Jupyter Lab:
      ```bash
      jupyter-lab
+     # or 
+     jupyter lab
+     # or
+     jupyter notebook
      ```
    - This will open Jupyter Lab in your web browser.
 
@@ -315,12 +327,17 @@ After installing Ubuntu, perform the following tasks to set up your Python devel
 These tasks will help you set up a Python development environment on Ubuntu and give you hands-on experience with network programming using Python sockets. The TCP server/client program demonstrates how to establish communication between two systems over a network.
 
 
-## **Task 3: Install Visual Studio Code on Ubuntu**
+## **Task 3: Install Python IDE on Ubuntu**
 
-**Objective:** Install Visual Studio Code (VSCode) on Ubuntu to use as an IDE for developing Python networking programs.
+**Objective:** For developing Python networking programs on Ubuntu, install a Python IDE such as
 
+- Visual Studio Code
+- PyCharm
 
-### **Method 1: Install Visual Studio Code on Ubuntu Using a .deb File**
+Choose one you preferred.
+
+### Install Visual Studio Code
+#### **Method 1: Install Visual Studio Code on Ubuntu Using a .deb File**
 
 
 **Steps:**
@@ -360,7 +377,7 @@ These tasks will help you set up a Python development environment on Ubuntu and 
 - Open the simple Python socket program created in **Task 2**, run it in the terminal, and ensure that the integrated terminal in VSCode works properly.
 
 
-### Optional method 2
+#### Optional method 2
 
 **Steps:**
 
@@ -392,6 +409,32 @@ These tasks will help you set up a Python development environment on Ubuntu and 
      sudo apt update
      sudo apt install code
      ```
+
+### Install PyCharm Community Edition
+
+**Steps:**
+
+1. Go to the [official PyCharm download page](https://www.jetbrains.com/pycharm/download/)
+
+2. Select your operating system as Linux.
+
+3. Click the "Download" button for the Community Edition.
+
+4. Wait for the download to complete.
+
+5. Install PyCharm:
+     - Extract the downloaded .tar.gz file
+     - Run the pycharm.sh script in the "bin" folder
+
+6. Launch PyCharm: Run the pycharm.sh script
+
+7. On first launch, you may need to:
+   - Accept the user agreement
+   - Choose your UI theme
+   - Select plugins (you can skip this step if unsure)
+
+8. Create a new project or open an existing one to start using PyCharm.
+
 
 ### **Conclusion**
 
