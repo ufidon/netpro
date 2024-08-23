@@ -233,6 +233,8 @@ After installing Ubuntu, perform the following tasks to set up your Python devel
      ```bash
      pip3 install jupyterlab
      pip install notebook
+     # or install system-wide 
+     sudo apt install jupyter python3-notebook
      ```
 
 6. **Verify the Installation:**
@@ -241,14 +243,13 @@ After installing Ubuntu, perform the following tasks to set up your Python devel
      python3 --version
      pip3 --version
      ipython3 --version
-     jupyter-lab --version
+     jupyter-lab --version # or
+     jupyter --version
      ```
    - Launch Jupyter Lab:
      ```bash
-     jupyter-lab
-     # or 
-     jupyter lab
-     # or
+     jupyter-lab # or
+     jupyter lab # or
      jupyter notebook
      ```
    - This will open Jupyter Lab in your web browser.
