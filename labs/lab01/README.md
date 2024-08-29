@@ -1,10 +1,7 @@
 ## Setup the lab environment
 
-**Don't use the newest version of VirtualBox or Ubuntu. Always use the version just older than the newest one**
+**Don't use the nightly built version of VirtualBox or Ubuntu. Always use the stable versions**
 
-- In 2024
-  - Use VirtualBox 6 instead of VirtualBox 7
-  - Use Ubuntu 22.04 LTS instead of Ubuntu 24.04 LTS
 
 ## Task 1: Install a Linux environment
 You may follow any one of the 6 options below to install an `Ubuntu/Linux environment`.
