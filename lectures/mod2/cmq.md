@@ -5,7 +5,7 @@ Caches and Message Queues
 ---
 - two popular and powerful building blocks for heavy-load services
 - provide caches, queues, and load distribution for services
-- general tools agnotic about carried data
+- general tools agnostic about carried data
 
 
 [memcached](https://memcached.org/)

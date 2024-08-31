@@ -30,6 +30,7 @@ socket.getservbyname('http') # ->80
 ```
 
 
+
 [UDP](https://en.wikipedia.org/wiki/User_Datagram_Protocol)
 ---
 - User Datagram Protocol
@@ -244,8 +245,7 @@ print(fn)
 # investigate with lsof -a -i4 -itcp
 ```
 
-
-## Simple socket programs
+## 🏃 Simple socket programs
 
 Get time from the internet time server
 ---
@@ -256,6 +256,114 @@ Get time from the internet time server
   sudo apt install python3-pip
   pip3 install ntplib
   ```
+- 🍎 Get ntp time
+  ```python
+  import ntplib
+  from time import ctime
+
+  def get_ntp_time(server='pool.ntp.org'):
+      try:
+          # Create an NTP client
+          ntp_client = ntplib.NTPClient()
+          
+          # Query the NTP server
+          response = ntp_client.request(server, version=3)
+          
+          # Convert the timestamp to a readable format
+          current_time = ctime(response.tx_time)
+          
+          print(f"Current time from NTP server {server}: {current_time}")
+          
+      except ntplib.NTPException as e:
+          print(f"Failed to get time from NTP server. Error: {e}")
+      except Exception as e:
+          print(f"An unexpected error occurred: {e}")
+
+  if __name__ == "__main__":
+      get_ntp_time()
+  ```
+
+- 🍎 Time epochs
+  - **Unix Time**: The `time.time()` function returns the current time in seconds since the `Unix epoch (January 1, 1970, 00:00:00 UTC)`. 
+    - This is a floating-point number (excluding leap seconds) 
+  - **NTP Timestamp**: To convert Unix time to an NTP timestamp, 
+    - we add the difference between the `NTP epoch (January 1, 1900)` and the `Unix epoch (January 1, 1970)`, 
+    - which is 2208988800 seconds.
+
+
+  ```python
+  import time
+  import ntplib
+  from datetime import datetime, timezone
+
+  # 1. Get the current Unix time (seconds since the Unix epoch, January 1, 1970)
+  unix_time = time.time()
+  print(f"Current Unix time: {unix_time}")
+
+  # 2. Convert Unix time to an NTP timestamp
+  # NTP timestamp is the number of seconds since January 1, 1900
+  NTP_EPOCH = 2208988800  # Difference between Unix epoch (1970) and NTP epoch (1900)
+  ntp_timestamp = unix_time + NTP_EPOCH
+  print(f"Corresponding NTP timestamp: {ntp_timestamp}")
+
+  # 3. Convert an NTP timestamp to a human-readable local time
+  # (Assuming we get the NTP time from an NTP server)
+  client = ntplib.NTPClient()
+  response = client.request('pool.ntp.org')
+  ntp_time = response.tx_time  # NTP time from the server (in Unix format)
+
+  # Convert the Unix time from NTP server to local time
+  local_time = datetime.fromtimestamp(ntp_time, tz=timezone.utc).astimezone()
+  print(f"NTP time in human-readable local time: {local_time}")
+
+  # 4. Convert Unix time to human-readable local time
+  human_readable_time = datetime.fromtimestamp(unix_time)
+  print(f"Current Unix time in human-readable local time: {human_readable_time}")
+  ```
+
+## 🛠️ [Scapy](https://scapy.readthedocs.io/)
+
+**What is Scapy?**
+
+* Powerful Python program for network packet manipulation.
+* Sends, sniffs, dissects, and forges packets.
+* Useful for network tasks like scanning, probing, and attacks (ethical use!).
+* Replaces tools like hping, Nmap (partially), tcpdump, and more.
+
+**Why Choose Scapy?**
+
+* **Flexibility:** Build custom packets beyond tool limitations.
+* **Complete Information:** Receive full decoded packets, not interpretations.
+* **Fast Development:** Describe packets with concise Python syntax.
+* **Multiple Interpretations:** Analyze data from various perspectives.
+* **Decodes, not Interprets:** Avoids biased results; focus on facts.
+
+**Fast Packet Design**
+
+* Scapy uses a Domain Specific Language (DSL) based on Python.
+* Describe packets as layers stacked on top of each other.
+* Override default values as needed for specific tasks.
+* Create complex packets in just a few lines of code.
+
+**💡[Demo - Basic Usage](https://scapy.readthedocs.io/en/latest/introduction.html#quick-demo)**
+
+* Create multiple IP packets with a single line.
+* Manipulate existing packets (change destination, TTL).
+* Build complex packets with multiple layers (Ethernet, IP, UDP).
+* Scapy uses sensible default values for common fields.
+
+## 💡 ntp in Scapy
+```bash
+# install scapy
+pip install scapy
+
+# run scapy without sudo
+sudo setcap cap_net_raw+eip $(which python3)
+sudo setcap cap_net_raw+eip $(which python)
+sudo setcap cap_net_raw+eip $(which scapy)
+```
+- [socket + scapy](./tcp/scntp2.py)
+- [scapy only](./tcp/scntp.py)
 
 # References
 - [socket — Low-level networking interface](https://docs.python.org/3/library/socket.html)
