@@ -249,7 +249,8 @@ print(fn)
 
 Get time from the internet time server
 ---
-- Network Time Protocol (NTP) can be used to synchronize your machine time with one of the internet time servers.
+- [Network Time Protocol (NTP)](https://en.wikipedia.org/wiki/Network_Time_Protocol) can be used to synchronize your machine time with one of the internet time servers.
+  - [Network Time Protocol Version 4: Protocol and Algorithms Specification RFC 5905](https://datatracker.ietf.org/doc/rfc5905/)
 - Simple Network Time Protocol (SNTP) can be used to get the time from NTP server but not as accurate as NTP
   ```bash
   # install ntplib

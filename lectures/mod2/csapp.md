@@ -11,6 +11,45 @@ Simple client/server programs
 
 ## Python socket functions and attributes
 
+### **0. Socket Enumerate Constants**
+
+| **Functionality**   | **Symbol Name**  | **Description**   | **Numeric Value** |
+|------|------|----|------|
+| **Address Families**    | `AF_INET`    | IPv4 Internet protocols (TCP/UDP).                                                                             | 2                 |
+|                              | `AF_INET6`                         | IPv6 Internet protocols (TCP/UDP).                                                                                                                          | 10                |
+|                              | `AF_UNIX`                          | Local communication (Unix domain sockets).                                                                                                                  | 1                 |
+|                              | `AF_PACKET`                        | Low-level packet interface. (Linux-specific)                                                                                                                | 17                |
+|                              | `AF_BLUETOOTH`                     | Bluetooth protocol stack.                                                                                                                                   | 31                |
+| **Socket Types**              | `SOCK_STREAM`                      | Provides sequenced, reliable, two-way, connection-based byte streams (TCP).                                                                                 | 1                 |
+|                              | `SOCK_DGRAM`                       | Supports datagrams (connectionless, unreliable messages) (UDP).                                                                                             | 2                 |
+|                              | `SOCK_RAW`                         | Provides raw network protocol access.                                                                                                                       | 3                 |
+|                              | `SOCK_SEQPACKET`                   | Provides sequenced, reliable, two-way connection-based transmission with a fixed maximum length of packet boundaries preserved.                             | 5                 |
+|                              | `SOCK_RDM`                         | Provides a reliable datagram layer that does not guarantee ordering (Linux-specific).                                                                        | 4                 |
+| **Protocol Numbers**          | `IPPROTO_TCP`                      | TCP protocol number.                                                                                                                                        | 6                 |
+|                              | `IPPROTO_UDP`                      | UDP protocol number.                                                                                                                                        | 17                |
+|                              | `IPPROTO_IP`                       | IP protocol number (used for raw sockets).                                                                                                                  | 0                 |
+|                              | `IPPROTO_ICMP`                     | ICMP protocol number.                                                                                                                                       | 1                 |
+| **Socket Options**            | `SO_REUSEADDR`                     | Allows the socket to bind to an address that is in a TIME_WAIT state.                                                                                        | 2                 |
+|                              | `SO_KEEPALIVE`                     | Sends keepalive messages on the connection.                                                                                                                 | 9                 |
+|                              | `SO_BROADCAST`                     | Allows transmission of broadcast messages.                                                                                                                  | 6                 |
+|                              | `SO_LINGER`                        | Controls the action taken when unsent messages are queued on a socket and a `close()` is performed.                                                         | 13                |
+|                              | `SO_SNDBUF`                        | Sets the size of the socket’s send buffer.                                                                                                                  | 7                 |
+|                              | `SO_RCVBUF`                        | Sets the size of the socket’s receive buffer.                                                                                                               | 8                 |
+| **Socket Levels**             | `SOL_SOCKET`                       | Socket options at the socket level.                                                                                                                         | 1                 |
+|                              | `SOL_IP`                           | Socket options at the IP level.                                                                                                                             | 0                 |
+|                              | `SOL_TCP`                          | Socket options at the TCP level.                                                                                                                            | 6                 |
+| **Control Messages (Ancillary Data)** | `SCM_RIGHTS`                  | Transfer file descriptors between processes.                                                                                                                | 1                 |
+|                              | `SCM_CREDENTIALS`                  | Transfer user credentials between processes (Linux-specific).                                                                                               | 2                 |
+| **Socket Modes**              | `MSG_OOB`                          | Process out-of-band data.                                                                                                                                   | 1                 |
+|                              | `MSG_PEEK`                         | Peek at the incoming message without removing it from the queue.                                                                                            | 2                 |
+|                              | `MSG_WAITALL`                      | Wait for full request or error.                                                                                                                             | 256               |
+|                              | `MSG_DONTROUTE`                    | Do not route; send the message directly to the interface.                                                                                                   | 4                 |
+| **Address Information Flags** | `AI_PASSIVE`                       | The returned address is suitable for `bind()`.                                                                                                              | 1                 |
+|                              | `AI_CANONNAME`                     | Return the canonical name of the host.                                                                                                                      | 2                 |
+|                              | `AI_NUMERICHOST`                   | Return the numeric form of the host’s address.                                                                                                              | 4                 |
+
+
+
 ### **1. Create and Close Sockets**
 
 | **Function**   | **Description**    | **Applicability (TCP/UDP)** |
