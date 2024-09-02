@@ -252,6 +252,9 @@ Capture NTP request and response packets using Wireshark and analyze the packet 
    - Once the NTP packets are captured, stop the capture in Wireshark.
    - Identify an NTP request packet and an NTP response packet in the capture.
    - Expand the packet details in Wireshark to analyze the fields, such as `LI`, `VN`, `Mode`, `Stratum`, `Timestamps`, etc.
+     - Convert all timestamps into human-readable format
+     - Calculate the corrected time
+     - Hint: changing the format in the “Time Display Format” menu item in the “View” menu to find the time when a packet is captured
    - Take screenshots of the analyzed packets and document the significant fields.
 
 #### **Deliverables:**

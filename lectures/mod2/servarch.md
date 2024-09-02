@@ -102,6 +102,19 @@ python3 srv_threaded.py localhost
 python3 client.py localhost
 ```
 
+🖊️ Practice
+---
+- Play with [multithread udp server](./srv/usmt.py)
+
+```bash
+# open two terminals, one runs the server
+python3 usmt.py
+# in the other terminal, run multiple clients simultaneously
+for i in {1..5}; do (python3 uc.py &); done && wait
+```
+
+## 👁️ Review: [Python Parallel Programming](./code/ppp.ipynb)
+
 
 The Legacy *SocketServer* Framework
 ---
