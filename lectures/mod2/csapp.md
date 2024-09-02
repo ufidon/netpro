@@ -3,11 +3,121 @@
 Simple client/server programs
 ---
 - simple TCP client/server programs
-  - [TCP echo server](./code/tcpEchoServer.py)
-  - [TCP echo client](./code/tcpEchoClient.py)
+  - [TCP echo server](./tcp/tes.py)
+  - [TCP echo client](./tcp/tec.py)
 - simple UDP client/server programs
-  - [UDP echo server](./code/udpEchoServer.py)
-  - [UDP echo client](./code/udpEchoClient.py)
+  - [UDP echo server](./udp/ues.py)
+  - [UDP echo client](./udp/uec.py)
+
+## Function `socket.socket(family=-1, type=-1, proto=-1, fileno=None)`
+- used to create a new socket object
+  - which is an endpoint for sending and receiving data across a network. 
+- provides low-level networking interfaces.
+
+
+### **`socket.socket()` signature**
+
+```python
+socket.socket(family=AF_INET, type=SOCK_STREAM, proto=0, fileno=None)
+```
+
+### **Formal Arguments**
+
+| **Argument** | **Description**      | **Common Values**     |
+|--------------|--------------|--------------|
+| **`family`** | Specifies the address family of the socket. This determines the type of addresses that the socket can communicate with.                                   | `AF_INET`, `AF_INET6`, `AF_UNIX`             |
+| **`type`**   | Specifies the socket type, which determines the communication semantics (e.g., stream or datagram).                                                       | `SOCK_STREAM`, `SOCK_DGRAM`, `SOCK_RAW`      |
+| **`proto`**  | Specifies the protocol to be used with the socket. The default is `0`, which lets the operating system select the appropriate protocol based on the type. | Usually set to `0`, or protocol-specific value |
+| **`fileno`** | Can be used to wrap an existing socket file descriptor (optional). When `None`, a new socket is created.                                                  | `None` (default)                             |
+
+
+### **Explanation and Usage**
+
+- **`family`:** Determines the type of addresses your socket can communicate with. 
+  - For most internet-based applications, you will use `AF_INET` for IPv4 or `AF_INET6` for IPv6.
+- **`type`:** Determines the communication style. 
+  - For example, `SOCK_STREAM` is used for TCP (reliable, connection-oriented) communications, 
+  - while `SOCK_DGRAM` is used for UDP (unreliable, connectionless) communications.
+- **`proto`:** This is usually left as `0` to allow the OS to choose the correct protocol based on the type. 
+  - However, for specific applications like raw sockets, you might specify a protocol directly.
+- **`fileno`:** Used in advanced scenarios where you want to wrap an existing file descriptor in a socket object.
+
+### 🍎 **Example Usage**
+
+```python
+import socket
+
+# Creating a TCP/IP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Binding the socket to an address and port
+sock.bind(('localhost', 8080))
+
+# Listening for incoming connections
+sock.listen(5)
+
+# Accept a connection
+connection, client_address = sock.accept()
+
+# Receive and send data
+data = connection.recv(1024)
+connection.sendall(data)
+
+# Close the connection
+connection.close()
+
+# Close the socket
+sock.close()
+```
+
+
+## `with` statement
+- with objects that support the `context management protocol`
+  - which implements the __enter__ and __exit__ methods
+
+```python
+with expression as variable: # 1. `expression` returns a context manager object
+    # 2. Clause `as variable` is optional. The object returned by the __enter__ method is assigned to the variable. 
+    #   This variable can then be used within the block
+    # 3. Code block (body of the with statement)
+    #   The variable can be used here
+    # 4. When the block is exited, the __exit__ method is automatically called, 
+    #   even if the block is exited due to an exception.
+
+```
+
+| **With `with` Statement** | **Without `with` Statement** |
+|---------------------------|-----------------------------|
+| ```python                  | ```python                    |
+| import socket              | import socket                |
+|                            |                              |
+| with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: | s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) |
+|  | try:                        |
+| s.connect(('localhost', 65432))  |     s.connect(('localhost', 65432)) |
+| s.sendall(b'Hello, world') |     s.sendall(b'Hello, world') |
+| data = s.recv(1024) |     data = s.recv(1024)        |
+| print('Received', repr(data)) |     print('Received', repr(data)) |
+|                            | finally:                    |
+| # The socket is automatically closed  |     s.close()               |
+| ```                        | ```                         |
+
+
+### **Comparison**
+
+- **Resource Management:**
+  - **With `with`:** The socket is automatically closed when the block is exited, ensuring proper resource management without needing to explicitly call `close()`.
+  - **Without `with`:** You have to manually close the socket using `s.close()` in a `finally` block to ensure it is closed even if an exception occurs.
+
+- **Code Simplicity:**
+  - **With `with`:** The code is cleaner and more concise since it abstracts away the cleanup process.
+  - **Without `with`:** The code requires additional boilerplate (`try`/`finally` block) to ensure proper resource management, making it more verbose.
+
+- **Error Handling:**
+  - **With `with`:** The `with` statement automatically handles the cleanup of the socket, even if an exception occurs within the block.
+  - **Without `with`:** The `finally` block ensures that the socket is closed, but you have to explicitly write this, making it prone to errors if forgotten.
+
+In general, using `with` is recommended for managing resources like sockets, files, and locks in Python because it simplifies code and reduces the risk of resource leaks.
+
 
 ## Python socket functions and attributes
 
@@ -152,12 +262,12 @@ Simple client/server programs
 
 
 
-Socket names and DNS
+Socket names and DNS (**optional**)
 ---
 - [dns.ipynb](./dns/dns.ipynb)
 
 
-Network data and network errors
+⭐ Network data and network errors
 ---
 - [datanerr.ipynb](./datanerr/datanerr.ipynb)
 
@@ -256,9 +366,9 @@ finally:
 ```
 
 
-Handle socket errors
+🍎 Handle socket errors
 ---
-- [code](./code/hserror.py)
+- [code](./code/herr.py)
 
 
 # Reference
