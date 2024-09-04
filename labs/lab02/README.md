@@ -326,7 +326,7 @@ if __name__ == '__main__':
 
 #### **Deliverables:**
 - Modified NTP client code.
-- Screenshot of the output showing the current time.
+- Screenshot of the output showing all packet fields in human-readable format.
 
 ---
 
@@ -386,6 +386,8 @@ if __name__ == '__main__':
 #### **Deliverables:**
 - Modified NTP server code.
 - Screenshot of the server handling requests from clients.
+  - show information of clients' endpoints and 
+  - all packet fields in human-readable format.
 
 ---
 
