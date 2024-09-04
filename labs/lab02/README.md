@@ -79,11 +79,11 @@ NTP packets are typically 48 bytes long and contain several fields. Here's a bre
    - Explanation: Entire fourth byte, interpreted as a signed integer
 
 7. Root Delay - 32 bits
-   - Formula: `i,f = struct.unpack('!hh', raw_data[4:8])`
+   - Formula: `i,f = struct.unpack('!HH', raw_data[4:8])`
    - Explanation: Bytes 5-8, in NTP short format = 16-bit integer + 16-bit fraction, `i+f/2**16` seconds
 
 8. Root Dispersion - 32 bits
-   - Formula: `i,f = struct.unpack('!hh', raw_data[8:12])`
+   - Formula: `i,f = struct.unpack('!HH', raw_data[8:12])`
    - Explanation: Bytes 9-12, in NTP short format = 16-bit integer + 16-bit fraction, `i+f/2**16` seconds
 
 9. Reference Identifier - 32 bits
@@ -148,14 +148,14 @@ Here's how to convert each NTP field value back to its raw data representation:
    ```python
    root_delay_int = int(Root_Delay // 1)
    root_delay_frac = int((Root_Delay % 1) * 2**16)
-   raw_data += struct.pack('!hh', root_delay_int, root_delay_frac)
+   raw_data += struct.pack('!HH', root_delay_int, root_delay_frac)
    ```
 
 6. Root Dispersion - 32 bits
    ```python
    root_dispersion_int = int(Root_Dispersion // 1)
    root_dispersion_frac = int((Root_Dispersion % 1) * 2**16)
-   raw_data += struct.pack('!hh', root_dispersion_int, root_dispersion_frac)
+   raw_data += struct.pack('!HH', root_dispersion_int, root_dispersion_frac)
    ```
 
 7. Reference Identifier - 32 bits
@@ -212,8 +212,8 @@ def create_ntp_packet(LI, VN, Mode, Stratum, Poll, Precision, Root_Delay, Root_D
     raw_data += bytes([Stratum])
     raw_data += bytes([Poll])
     raw_data += struct.pack('b', Precision)
-    raw_data += struct.pack('!hh', int(Root_Delay), int((Root_Delay - int(Root_Delay)) * 2**16))
-    raw_data += struct.pack('!hh', int(Root_Dispersion), int((Root_Dispersion - int(Root_Dispersion)) * 2**16))
+    raw_data += struct.pack('!HH', int(Root_Delay), int((Root_Delay - int(Root_Delay)) * 2**16))
+    raw_data += struct.pack('!HH', int(Root_Dispersion), int((Root_Dispersion - int(Root_Dispersion)) * 2**16))
     
     if isinstance(Reference_ID, str):
         raw_data += Reference_ID.encode('ascii').ljust(4, b'\x00')
