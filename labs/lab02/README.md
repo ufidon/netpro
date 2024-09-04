@@ -116,8 +116,8 @@ def _parse_timestamp(raw_timestamp):
 
 Note: The NTP timestamp is a 64-bit fixed-point number, where the first 32 bits represent the number of seconds since January 1, 1900, and the last 32 bits represent the fractional part of the second.
 
-14. The corrected time = t3 + ((t1-t0) + (t2-t3))/2
-    - t3 is the time when the client received the ntp packet
+1.  The $\displaystyle \text{Corrected time} = t3 + \frac{(t1 - t0) + (t2 - t3)}{2}$
+    - $t3$ is the time when the client received the ntp packet
 
 # NTP Field Values to Raw Data Conversion
 
