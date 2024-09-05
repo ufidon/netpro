@@ -32,49 +32,86 @@ The NTP packet structure typically consists of 48 bytes and includes the followi
    - **Purpose**: Indicates the stratum level of the clock source.
    - **Values**:
      - `0`: Unspecified or invalid.
-     - `1`: Primary reference (e.g., a radio clock).
+     - `1`: Primary reference (e.g., a radio clock equipped with a GPS receiver).
      - `2-15`: Secondary reference (synchronized via NTP).
-     - `16-255`: Unsynchronized.
+     - `16`: Unsynchronized.
+     - `17-255`: reserved.
 
 5. **Poll Interval (8 bits)**
    - **Purpose**: Indicates the maximum interval between successive messages, expressed as a power of two in seconds.
-   - **Values**: Ranges from `4` (16 seconds) to `17` (131,072 seconds).
+   - **Values**: Ranges from `MINPOLL` `4` ($16=2^4$ seconds) to `MAXPOLL` `17` ($131,072=2^{17}$ seconds).
 
 6. **Precision (8 bits)**
    - **Purpose**: Indicates the precision of the system clock, expressed as a power of two.
    - **Values**: Typically a negative value; e.g., `-20` corresponds to a precision of about 1 microsecond.
+   - The precision is normally determined when the service first starts up as the minimum of several iterations of the time to read the system clock.
 
 7. **Root Delay (32 bits)**
    - **Purpose**: Indicates the total round-trip delay to the primary reference source, in seconds.
-   - **Values**: Fixed-point number with 16 bits integer and 16 bits fractional. Positive values indicate a delay; negative values indicate an advance.
+   - **Values**: a floating number in NTP short format with 16 bits integer and 16 bits fractional. Positive values indicate a delay; negative values indicate an advance.
 
 8. **Root Dispersion (32 bits)**
    - **Purpose**: Indicates the maximum error relative to the primary reference source, in seconds.
-   - **Values**: Fixed-point number with 16 bits integer and 16 bits fractional. Represents the nominal error.
+   - **Values**: a floating number in NTP short format with 16 bits integer and 16 bits fractional. Represents the nominal error.
 
 9. **Reference Identifier (32 bits)**
    - **Purpose**: Identifies the particular reference source.
    - **Values**: 
-     - Stratum 0-1: ASCII string (e.g., "GPS", "ATOM").
+     - Stratum 0-1: ASCII string (e.g., "GPS ", "ATOM").
      - Stratum 2-15: The IP address of the reference NTP server.
+       - the four-octet IPv4 address, or
+       - the first four octets of the MD5 hash of the IPv6 address
 
-10. **Reference Timestamp (64 bits)**
+**ASCII identifiers**
+
+- Stratum=0: a four-character ASCII string, called the "kiss code"
+- Stratum=1: a four-octet, left-justified, zero-padded ASCII    string assigned to the reference clock
+- Any string beginning with the ASCII character "X" is reserved for unregistered
+   experimentation and development
+
+| ID   | Clock Source                                             |
+|------|----------------------------------------------------------|
+| GOES | Geosynchronous Orbit Environment Satellite               |
+| GPS  | Global Position System                                   |
+| GAL  | Galileo Positioning System                               |
+| PPS  | Generic pulse-per-second                                 |
+| IRIG | Inter-Range Instrumentation Group                        |
+| WWVB | LF Radio WWVB Ft. Collins, CO 60 kHz                     |
+| DCF  | LF Radio DCF77 Mainflingen, DE 77.5 kHz                  |
+| HBG  | LF Radio HBG Prangins, HB 75 kHz                         |
+| MSF  | LF Radio MSF Anthorn, UK 60 kHz                          |
+| JJY  | LF Radio JJY Fukushima, JP 40 kHz, Saga, JP 60 kHz       |
+| LORC | MF Radio LORAN C station, 100 kHz                        |
+| TDF  | MF Radio Allouis, FR 162 kHz                             |
+| CHU  | HF Radio CHU Ottawa, Ontario                             |
+| WWV  | HF Radio WWV Ft. Collins, CO                             |
+| WWVH | HF Radio WWVH Kauai, HI                                  |
+| NIST | NIST telephone modem                                     |
+| ACTS | NIST telephone modem                                     |
+| USNO | USNO telephone modem                                     |
+| PTB  | European telephone modem                                 |
+
+
+This table lists clock source IDs and their descriptions in a clear and organized way using Markdown syntax.
+
+
+1.  **Reference Timestamp (64 bits)**
     - **Purpose**: Indicates the time when the system clock was last set or corrected.
     - **Values**: 64-bit timestamp (32 bits for seconds and 32 bits for the fractional second part).
 
-11. **Originate Timestamp (64 bits)**
+2.  **Originate Timestamp (64 bits)**
     - **Purpose**: The time at which the client sent the request to the server.
-    - **Values**: 64-bit timestamp (32 bits for seconds and 32 bits for the fractional second part).
+    - **Values**: 64-bit timestamp in NTP timestamp format(32 bits for seconds and 32 bits for the fractional second part).
 
-12. **Receive Timestamp (64 bits)**
+3.  **Receive Timestamp (64 bits)**
     - **Purpose**: The time at which the server received the client's request.
-    - **Values**: 64-bit timestamp (32 bits for seconds and 32 bits for the fractional second part).
+    - **Values**: 64-bit timestamp in NTP timestamp format(32 bits for seconds and 32 bits for the fractional second part).
 
-13. **Transmit Timestamp (64 bits)**
+4.  **Transmit Timestamp (64 bits)**
     - **Purpose**: The time at which the server sent the response to the client.
-    - **Values**: 64-bit timestamp (32 bits for seconds and 32 bits for the fractional second part).
+    - **Values**: 64-bit timestamp in NTP timestamp format(32 bits for seconds and 32 bits for the fractional second part).
 
-14. **Optional Fields (Extension Fields)**
+5.  **Optional Fields (Extension Fields)**
     - **Purpose**: Used for authentication and other purposes.
     - **Values**: Various, depending on the extension used.
 
@@ -149,26 +186,6 @@ Where `n` is a signed integer representing the precision.
    Here, $n = -20$, so the precision field in the NTP packet would be `-20`.
 
 
-## How Does A NTP Server Determine Its Clock Precision?
-The **precision** field in the NTP (Network Time Protocol) packet indicates the clock resolution. 
-
-### Details of the Precision Field:
-
-- **Field Name**: Precision
-- **Size**: 8 bits (1 byte)
-- **Value Type**: Signed integer (in two's complement)
-- **Purpose**: Represents the precision of the system clock in seconds, expressed as a power of two.
-  
-### How It Works:
-
-- The value in the precision field is the logarithm base 2 of the system clock's precision. For example:
-  - A precision value of `-6` indicates that the clock's precision is approximately $2^{-6}$ seconds, or about 15.625 milliseconds.
-  - A precision value of `-20` indicates that the clock's precision is approximately $2^{-20}$ seconds, or about 1 microsecond.
-  
-### Example:
-
-If the precision field in an NTP packet has a value of `-10`, it indicates that the system clock can measure time with a precision of approximately $2^{-10}$ seconds, which is about 0.0009765625 seconds (or close to 1 millisecond).
-
 ## How Does A NTP Server Calculate The Root Delay?
 
 ### Root Delay Calculation
@@ -195,7 +212,7 @@ Root Delay is typically calculated in a multi-hop NTP hierarchy where multiple N
   - T3: Time at which the server sent the response.
   - T4: Time at which the response was received by the client.
 
-  The round-trip delay $ D $ for each hop is:
+  The round-trip delay $D$ for each hop is:
   $
   D = (T4 - T1) - (T3 - T2)
   $
@@ -246,43 +263,9 @@ Consider a simple NTP hierarchy where your server synchronizes to an upstream NT
 
 This gives you an estimate of the total delay and error that could be expected between your server and the reference clock at the root of the NTP hierarchy.
 
-## How to Determine the Value of a Fixed-Point Number of 16.16 Format?
-
-A **fixed-point number** in a 16.16 format uses 16 bits for the integer part and 16 bits for the fractional part. This format allows for representing both positive and negative numbers with high precision in the fractional component.
-
-### Example
-
-Let's take the fixed-point number `0x0001_8000`.
-
-- **Binary Representation:**
-  - `0x0001_8000` in binary: `0000 0000 0000 0001 1000 0000 0000 0000`
-  - First 16 bits: `0000 0000 0000 0001` (Integer part)
-  - Last 16 bits: `1000 0000 0000 0000` (Fractional part)
-
-### Breakdown:
-1. **Integer Part:**
-   - `0000 0000 0000 0001` in decimal is `1`.
-   
-2. **Fractional Part:**
-   - `1000 0000 0000 0000` in binary represents `2^(-1)` in decimal.
-   - The fractional value in decimal: `0.5`.
-
-### Final Value:
-- **Fixed-point number** = Integer part + Fractional part
-- **Value** = `1 + 0.5 = 1.5`
-
-So, `0x0001_8000` in 16.16 fixed-point format represents the decimal value **1.5**.
-
-### Another Example
-
-Consider the number `0xFFFF_8000`:
-
-- **Binary Representation:**
-  - `0xFFFF_8000` in binary: `1111 1111 1111 1111 1000 0000 0000 0000`
-  - Integer part: `1111 1111 1111 1111` (in two's complement, this is `-1`).
-  - Fractional part: `1000 0000 0000 0000` (which is `0.5`).
-
-### Final Value:
-- **Value** = `-1 + 0.5 = -0.5`
-
-So, `0xFFFF_8000` represents the decimal value **-0.5** in 16.16 fixed-point format.
+# References
+- [Network Time Protocol Version 4  Core Protocol Specification](https://www.eecis.udel.edu/~mills/database/brief/flow/ntp4.pdf)
+- [Network Time Protocol Version 4 Reference and Implementation Guide](https://www.eecis.udel.edu/~mills/database/reports/ntp4/ntp4.pdf)
+- [The Network Time Protocol (NTP) Project](https://www.ntp.org/)
+  - [Computer Network Time Synchronization: the Network Time Protocol](https://www.ntp.org/reflib/brief/seminar/ntp.pdf)
+- [What's the best timing resolution can i get on Linux](https://stackoverflow.com/questions/12643535/whats-the-best-timing-resolution-can-i-get-on-linux)
