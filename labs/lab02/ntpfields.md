@@ -145,9 +145,7 @@ For example, if the **Transmit Timestamp** is `3849015756.45678901`:
 
 The precision in an NTP packet represents the precision of the system clock, and it is expressed as a power of two in seconds. The formula to calculate the precision is:
 
-$
-\text{Precision} = 2^{n} \text{ seconds}
-$
+$\text{Precision} = 2^{n} \text{ seconds}$
 
 Where `n` is a signed integer representing the precision.
 
@@ -157,17 +155,13 @@ Where `n` is a signed integer representing the precision.
 
 2. **Express the resolution in seconds**: Convert the clock resolution to seconds. For example, if the resolution is 1 millisecond, then:
 
-   $
-   \text{Clock Resolution} = 0.001 \text{ seconds}
-   $
+   $\text{Clock Resolution} = 0.001 \text{ seconds}$
 
 3. **Calculate the power of two**: Express the clock resolution as a power of two by finding the nearest power of two less than or equal to the clock resolution in seconds.
 
    For example, if the clock resolution is 1 millisecond (`0.001` seconds):
 
-   $
-   \text{Precision} = 2^{-10} \text{ seconds}
-   $
+   $\text{Precision} = 2^{-10} \text{ seconds}$
 
    Here, $2^{-10}$ is approximately $0.0009765625$ seconds, which is close to 1 millisecond.
 
@@ -196,14 +190,10 @@ Where `n` is a signed integer representing the precision.
 Root Delay is typically calculated in a multi-hop NTP hierarchy where multiple NTP servers synchronize to one another. The delay for each hop is measured, and the Root Delay is the sum of these delays.
 
 1. **Single Hop (Direct connection to a reference clock):**
-   $
-   \text{Root Delay} = \text{Round-Trip Delay to Reference Clock}
-   $
+   - $\text{Root Delay} = \text{Round-Trip Delay to Reference Clock}$
 
 2. **Multiple Hops (NTP server synchronizes to another NTP server):**
-   $
-   \text{Root Delay} = \sum_{i=1}^{n} \text{Network Delay of Hop } i
-   $
+   - $\text{Root Delay} = \sum_{i=1}^{n} \text{Network Delay of Hop } i$
    where `n` is the number of hops to the primary reference clock.
 
 - The delay for each hop is measured using the NTP timestamps (T1, T2, T3, T4) where:
@@ -212,10 +202,8 @@ Root Delay is typically calculated in a multi-hop NTP hierarchy where multiple N
   - T3: Time at which the server sent the response.
   - T4: Time at which the response was received by the client.
 
-  The round-trip delay $D$ for each hop is:
-  $
-  D = (T4 - T1) - (T3 - T2)
-  $
+  The round-trip delay $D$ for each hop is: 
+  $D = (T4 - T1) - (T3 - T2)$
 
 ### Root Dispersion Calculation
 
@@ -223,23 +211,17 @@ Root Delay is typically calculated in a multi-hop NTP hierarchy where multiple N
 
 #### Calculation
 1. **Single Hop (Direct connection to a reference clock):**
-   $
-   \text{Root Dispersion} = \text{Maximum Error of Reference Clock}
-   $
+   - $\text{Root Dispersion} = \text{Maximum Error of Reference Clock}$
 
 2. **Multiple Hops (NTP server synchronizes to another NTP server):**
-   $
-   \text{Root Dispersion} = \sum_{i=1}^{n} \text{Dispersion of Hop } i
-   $
-   where `n` is the number of hops to the primary reference clock.
+   - $\text{Root Dispersion} = \sum_{i=1}^{n} \text{Dispersion of Hop } i$
+     - where `n` is the number of hops to the primary reference clock.
 
 - The dispersion for each hop is calculated as:
-  $
-  \text{Dispersion} = \text{Precision} + (\text{Error Bound} \times \text{Age})
-  $
-  - **Precision**: Indicates the precision of the clock.
-  - **Error Bound**: Represents the maximum clock offset from the true time.
-  - **Age**: The time since the last synchronization.
+   - $\text{Dispersion} = \text{Precision} + (\text{Error Bound} \times \text{Age})$
+      - **Precision**: Indicates the precision of the clock.
+      - **Error Bound**: Represents the maximum clock offset from the true time.
+      - **Age**: The time since the last synchronization.
 
 ### Practical Example
 
