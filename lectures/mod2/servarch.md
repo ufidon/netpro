@@ -411,6 +411,309 @@ python3 uas.py # or uap.py, or uae.py
 - [UDP Echo Server by asyncio.DatagramProtocol](./srv/asyndg.py)
 
 
+## Message framing in asyncio
+```bash
+# 1. Length Prefixing
+# server:
+python3 ./srv/abs.py
+# client:
+python3 ./srv/abc.py
+
+# 2. Delimiter-Based Framing
+# server:
+python3 ./srv/ads.py
+# client:
+python3 ./srv/adc.py
+
+# 3. Fixed-Length Framing
+# server:
+python3 ./srv/afs.py
+# client:
+python3 ./srv/afc.py
+```
+
+##  **`asyncio` Module-Level Functions**
+
+- Methods that are **coroutines** need to be awaited. 
+  - These coroutines suspend execution of the calling function to allow other tasks to run concurrently. 
+- Regular functions that return results immediately and do not need to be awaited.
+
+| **Function**                        | **Signature**                                   | **Description**                                              | **Await Needed?** |
+|-------------------------------------|-------------------------------------------------|--------------------------------------------------------------|-------------------|
+| `asyncio.run()`                     | `asyncio.run(main, *, debug=False)`            | Runs the main coroutine, managing the event loop.           | No                |
+| `asyncio.get_event_loop()`          | `asyncio.get_event_loop()`                     | Returns the current event loop or creates a new one.        | No                |
+| `asyncio.set_event_loop()`          | `asyncio.set_event_loop(loop)`                 | Sets the event loop object to be used.                      | No                |
+| `asyncio.new_event_loop()`          | `asyncio.new_event_loop()`                     | Creates a new event loop object.                            | No                |
+| `asyncio.get_event_loop_policy()`   | `asyncio.get_event_loop_policy()`              | Returns the current event loop policy.                      | No                |
+| `asyncio.set_event_loop_policy()`   | `asyncio.set_event_loop_policy(policy)`        | Sets the event loop policy.                                | No                |
+| `asyncio.create_task()`             | `asyncio.create_task(coro, *, name=None)`      | Schedules the coroutine to be executed.                     | No                |
+| `asyncio.sleep()`                  | `asyncio.sleep(delay, result=None)`            | Suspends execution of the coroutine for `delay` seconds.    | Yes               |
+| `asyncio.wait()`                   | `asyncio.wait(fs, *, timeout=None, return_when=ALL_COMPLETED)` | Waits for the futures to be completed or timeout. | Yes               |
+| `asyncio.wait_for()`               | `asyncio.wait_for(future, timeout)`            | Waits for the future to be completed or raises `TimeoutError`. | Yes            |
+| `asyncio.shield()`                 | `asyncio.shield(aw, *, loop=None)`             | Protects the coroutine from being cancelled.               | Yes               |
+| `asyncio.gather()`                 | `asyncio.gather(*tasks, return_exceptions=False)` | Runs multiple coroutines concurrently and waits for them. | Yes               |
+| `asyncio.as_completed()`            | `asyncio.as_completed(pending, *, timeout=None)` | Returns an iterator that yields results as coroutines complete. | Yes            |
+| `asyncio.ensure_future()`           | `asyncio.ensure_future(coro_or_future, *, loop=None)` | Wraps a coroutine or future into a Task.               | No                |
+| `asyncio.current_task()`            | `asyncio.current_task(loop=None)`              | Returns the currently running task in the event loop.      | No                |
+| `asyncio.all_tasks()`               | `asyncio.all_tasks(loop=None)`                 | Returns a set of all tasks currently scheduled.            | No                |
+| `asyncio.get_running_loop()`        | `asyncio.get_running_loop()`                   | Returns the currently running event loop.                  | No                |
+| `asyncio.run_coroutine_threadsafe()` | `asyncio.run_coroutine_threadsafe(coro, loop)` | Schedules the coroutine to be run in the event loop.        | No                |
+| `asyncio.to_thread()`               | `asyncio.to_thread(func, *args, **kwargs)`     | Runs a function in a separate thread and returns a coroutine. | Yes            |
+| `asyncio.open_connection()`         | `asyncio.open_connection(host=None, port=None, *, loop=None, timeout=None, ssl=None, **kwargs)` | Opens a network connection to a specified host and port.   | Yes               |
+| `asyncio.start_server()`            | `asyncio.start_server(client_connected_cb, host=None, port=None, *, loop=None, ssl=None, **kwargs)` | Starts a TCP server.                                      | Yes               |
+| `asyncio.start_unix_server()`       | `asyncio.start_unix_server(client_connected_cb, path, *, loop=None, ssl=None, **kwargs)` | Starts a Unix domain socket server.                       | Yes               |
+| `asyncio.open_unix_connection()`    | `asyncio.open_unix_connection(path, *, loop=None, timeout=None, ssl=None, **kwargs)` | Opens a Unix domain socket connection.                    | Yes               |
+
+
+### `asyncio` classes
+
+
+| **Class**                   | **Description**                                                                                                              | **Usage**                                                                                                    |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| `asyncio.AbstractEventLoop`  | The base class for event loops. It manages and handles the asynchronous operations in `asyncio`.                             | Manages task execution, I/O events, and signal handling.                                                      |
+| `asyncio.EventLoop`          | A concrete implementation of the event loop for running asynchronous tasks.                                                  | Created using `asyncio.get_event_loop()` or `asyncio.run()`. Handles scheduling of tasks and callbacks.       |
+| `asyncio.Task`               | A wrapper for coroutines that run asynchronously in the event loop.                                                          | Created via `asyncio.create_task()` or `asyncio.ensure_future()` to schedule the execution of coroutines.     |
+| `asyncio.Future`             | Represents a result that will be available in the future. Similar to `concurrent.futures.Future`.                            | Used in coordination with `asyncio.Task` to handle results or exceptions of asynchronous operations.          |
+| `asyncio.Queue`              | A queue-like data structure for managing tasks in a producer-consumer model asynchronously.                                  | Supports operations like `put()`, `get()`, and `task_done()` for task coordination between coroutines.        |
+| `asyncio.StreamReader`       | Used to read data from streams, such as socket connections, in an asynchronous manner.                                       | Used in TCP communication (e.g., `await reader.read()`).                                                      |
+| `asyncio.StreamWriter`       | Used to write data to streams asynchronously.                                                                                | Used in TCP communication (e.g., `writer.write(data)`).                                                       |
+| `asyncio.Lock`               | An asynchronous lock primitive that allows coroutines to wait for the lock to be acquired.                                   | Allows mutual exclusion between coroutines (similar to threading locks but for async).                        |
+| `asyncio.Condition`          | Allows coroutines to wait until a specific condition is met.                                                                 | Similar to traditional condition variables but in an asynchronous context.                                    |
+| `asyncio.Semaphore`          | Manages an internal counter, blocking access when the counter reaches zero. Used for limiting concurrent access.             | Used to limit the number of coroutines that can access a resource concurrently.                               |
+| `asyncio.Event`              | A synchronization primitive that allows coroutines to wait for an event to be set before continuing.                         | Useful for controlling task flow by waiting for a specific event to be triggered.                             |
+| `asyncio.Subprocess`         | A class for launching subprocesses asynchronously.                                                                           | Used to create, monitor, and control subprocesses asynchronously via `asyncio.create_subprocess_exec()` etc.  |
+| `asyncio.StreamReaderProtocol` | Protocol class for handling streams of data, often used with `StreamReader` and `StreamWriter`.                            | Useful when working with custom protocols or processing data streams.                                         |
+| `asyncio.Server`             | A class representing a server that listens for incoming connections.                                                         | Used in conjunction with `asyncio.start_server()` to handle multiple client connections asynchronously.       |
+| `asyncio.Transport`          | An abstraction for handling underlying communication channels (e.g., sockets) in asyncio.                                    | Provides methods like `write()` and `close()` for low-level I/O operations.                                   |
+| `asyncio.Protocol`           | Base class for implementing application-level protocols for communication, typically used with `Transport`.                  | Defines methods like `connection_made()`, `data_received()`, `connection_lost()`.                             |
+| `asyncio.DatagramTransport`  | A transport class specifically for handling datagrams (UDP).                                                                 | Used for sending/receiving UDP data asynchronously.                                                          |
+| `asyncio.DatagramProtocol`   | Protocol class for handling UDP communication. Similar to `Protocol` but for datagrams.                                       | Implements methods like `datagram_received()` for processing UDP packets.                                     |
+| `asyncio.BaseEventLoop`      | A base class for event loops, from which concrete event loop implementations inherit.                                        | Provides low-level event loop behavior, used internally by asyncio.                                           |
+| `asyncio.LimitOverrunError`  | Exception raised when reading from a stream and a buffer limit is exceeded.                                                  | Raised by `StreamReader.read()` when trying to read more data than allowed.                                   |
+| `asyncio.IncompleteReadError`| Exception raised when `StreamReader.read()` reads less data than expected.                                                   | Commonly encountered in TCP streams when reading from incomplete data.                                        |
+| `asyncio.TimeoutError`       | Exception raised when a timeout occurs.                                                                                      | Used with functions like `asyncio.wait_for()` to set time limits for task execution.                          |
+| `asyncio.CancelledError`     | Exception raised when a task is canceled.                                                                                    | Raised when a task or coroutine is canceled (e.g., via `task.cancel()`).                                      |
+| `asyncio.BoundedSemaphore`   | A version of `Semaphore` with a maximum upper bound.                                                                         | Used to restrict access to a resource, but with an upper limit for the semaphore counter.                     |
+
+
+
+###  **`asyncio.AbstractEventLoop` Class Methods**
+- Defines the abstract methods for event loop operations; not used directly.
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `run_forever()`                      | No                  | Starts the event loop indefinitely, not awaited.                                                     |
+| `run_until_complete(future)`         | No                  | Runs until a future completes, not awaited.                                                          |
+| `create_task(coro)`                  | No                  | Schedules a coroutine as a task, does not need to be awaited.                                        |
+| `call_later(delay, callback)`        | No                  | Schedules a callback, does not need `await`.                                                         |
+| `call_soon(callback)`                | No                  | Schedules a callback, no need to await.                                                              |
+| `stop()`                             | No                  | Stops the event loop, not awaited.                                                                   |
+| `time()`                             | No                  | Returns the internal event loop time, no need to await.                                              |
+
+
+### **`asyncio.BaseEventLoop` Class**
+- A concrete implementation of AbstractEventLoop and the default event loop in asyncio.
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `run_forever()`                      | Method     | Runs the event loop indefinitely until `stop()` is called.                                              | No                |
+| `run_until_complete(future)`         | Method     | Runs the event loop until the `future` is done and returns the result.                                  | No                |
+| `create_task(coro)`                  | Method     | Schedules a coroutine to be executed and returns a `Task` object.                                        | No                |
+| `call_later(delay, callback)`        | Method     | Schedules a callback to be called after a delay.                                                        | No                |
+| `call_soon(callback)`                | Method     | Schedules a callback to be called as soon as possible.                                                   | No                |
+| `stop()`                             | Method     | Stops the event loop after the current iteration completes.                                              | No                |
+| `is_running()`                       | Method     | Returns `True` if the event loop is currently running.                                                   | No                |
+| `time()`                             | Method     | Returns the current event loop time.                                                                     | No                |
+| `add_reader(fd, callback)`           | Method     | Adds a callback to be invoked when reading from the file descriptor `fd` is possible.                    | No                |
+| `add_writer(fd, callback)`           | Method     | Adds a callback to be invoked when writing to the file descriptor `fd` is possible.                      | No                |
+| `remove_reader(fd)`                  | Method     | Removes a reader callback for the file descriptor `fd`.                                                  | No                |
+| `remove_writer(fd)`                  | Method     | Removes a writer callback for the file descriptor `fd`.                                                  | No                |
+
+### **`asyncio.EventLoop` Class**
+- A more abstract interface; generally used as a proxy to BaseEventLoop.
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `run_forever()`                      | Method     | Runs the event loop indefinitely until `stop()` is called.                                              | No                |
+| `run_until_complete(future)`         | Method     | Runs the event loop until the `future` is done and returns the result.                                  | No                |
+| `create_task(coro)`                  | Method     | Schedules a coroutine to be executed and returns a `Task` object.                                        | No                |
+| `call_later(delay, callback)`        | Method     | Schedules a callback to be called after a delay.                                                        | No                |
+| `call_soon(callback)`                | Method     | Schedules a callback to be called as soon as possible.                                                   | No                |
+| `stop()`                             | Method     | Stops the event loop after the current iteration completes.                                              | No                |
+| `is_running()`                       | Method     | Returns `True` if the event loop is currently running.                                                   | No                |
+| `time()`                             | Method     | Returns the current event loop time.                                                                     | No                |
+| `add_reader(fd, callback)`           | Method     | Adds a callback to be invoked when reading from the file descriptor `fd` is possible.                    | No                |
+| `add_writer(fd, callback)`           | Method     | Adds a callback to be invoked when writing to the file descriptor `fd` is possible.                      | No                |
+| `remove_reader(fd)`                  | Method     | Removes a reader callback for the file descriptor `fd`.                                                  | No                |
+| `remove_writer(fd)`                  | Method     | Removes a writer callback for the file descriptor `fd`.                                                  | No                |
+
+
+
+### **`asyncio.Task` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `cancel()`                           | No                  | Cancels the task, not awaited.                                                                       |
+| `done()`                             | No                  | Checks if the task is done, no need to await.                                                        |
+| `result()`                           | No                  | Gets the result of the task if completed, not awaited.                                               |
+| `exception()`                        | No                  | Gets the exception raised by the task, not awaited.                                                  |
+| `add_done_callback(callback)`        | No                  | Schedules a callback for when the task is done, not awaited.                                         |
+
+
+
+### **`asyncio.Future` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `cancel()`                           | No                  | Cancels the future, not awaited.                                                                     |
+| `done()`                             | No                  | Checks if the future is done, no need to await.                                                      |
+| `result()`                           | No                  | Gets the result of the future if completed, not awaited.                                             |
+| `exception()`                        | No                  | Gets the exception raised by the future, not awaited.                                                |
+| `set_result(result)`                 | No                  | Sets the result of the future, not awaited.                                                          |
+
+
+
+### **`asyncio.StreamReader` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `read(n=-1)`                         | **Yes**             | Reads data from the stream.                                                                          |
+| `readexactly(n)`                     | **Yes**             | Reads exactly `n` bytes from the stream.                                                             |
+| `readline()`                         | **Yes**             | Reads a line from the stream.                                                                        |
+| `at_eof()`                           | No                  | Checks if the stream has reached EOF, no need to await.                                              |
+
+
+
+### **`asyncio.StreamWriter` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `write(data)`                        | No                  | Writes data to the stream, no need to await.                                                         |
+| `drain()`                            | **Yes**             | Waits until it’s appropriate to resume writing to the stream.                                        |
+| `close()`                            | No                  | Closes the stream, but does not need to be awaited.                                                  |
+
+
+### **`asyncio.Subprocess` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `stdin`                              | Attribute  | A `StreamWriter` for standard input.                                                                     | No                |
+| `stdout`                             | Attribute  | A `StreamReader` for standard output.                                                                    | No                |
+| `stderr`                             | Attribute  | A `StreamReader` for standard error.                                                                     | No                |
+
+### **`asyncio.StreamReaderProtocol` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `connection_made(transport)`         | Method     | Called when a connection is made.                                                                       | No                |
+| `data_received(data)`                | Method     | Called when data is received.                                                                          | No                |
+| `connection_lost(exc)`               | Method     | Called when the connection is closed or lost.                                                            | No                |
+
+### **`asyncio.StreamWriterProtocol` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `connection_made(transport)`         | Method     | Called when a connection is made.                                                                       | No                |
+| `data_received(data)`                | Method     | Called when data is received.                                                                          | No                |
+| `connection_lost(exc)`               | Method     | Called when the connection is closed or lost.                                                            | No                |
+
+### **`asyncio.DatagramTransport` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `sendto(data, addr)`                 | Method     | Sends `data` to the address `addr`.                                                                     | No                |
+| `get_extra_info(name)`               | Method     | Retrieves extra information, such as `sockname` or `peername`.                                          | No                |
+| `close()`                            | Method     | Closes the transport.                                                                                   | No                |
+
+### **`asyncio.DatagramProtocol` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `connection_made(transport)`         | Method     | Called when a connection is made.                                                                       | No                |
+| `datagram_received(data, addr)`      | Method     | Called when a datagram is received from the address `addr`.                                             | No                |
+| `error_received(exc)`                | Method     | Called when an error is received.                                                                       | No                |
+| `connection_lost(exc)`               | Method     | Called when the connection is closed or lost.                                                            | No                |
+
+
+### **`asyncio.Lock` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `acquire()`                          | **Yes**             | Awaits until the lock is acquired.                                                                   |
+| `release()`                          | No                  | Releases the lock, no need to await.                                                                 |
+| `locked()`                           | No                  | Checks if the lock is currently acquired, no need to await.                                          |
+
+
+
+### **`asyncio.Condition` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `acquire()`                          | Method     | Acquires the condition’s lock, waiting if necessary.                                                    | Yes               |
+| `release()`                          | Method     | Releases the condition’s lock.                                                                          | No                |
+| `wait()`                             | Method     | Waits until notified or cancelled.                                                                      | Yes               |
+| `notify(n=1)`                        | Method     | Wakes up `n` waiting coroutines.                                                                        | No                |
+| `notify_all()`                       | Method     | Wakes up all waiting coroutines.                                                                        | No                |
+
+### **`asyncio.Semaphore` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `acquire()`                          | Method     | Acquires a semaphore, waiting if necessary.                                                             | Yes               |
+| `release()`                          | Method     | Releases the semaphore, increasing the count.                                                           | No                |
+| `locked()`                           | Method     | Returns `True` if the semaphore is currently locked.                                                    | No                |
+
+### **`asyncio.Event` Class**
+
+| **Member**                           | **Type**   | **Description**                                                                                         | **Await Needed?** |
+|--------------------------------------|------------|---------------------------------------------------------------------------------------------------------|-------------------|
+| `set()`                              | Method     | Sets the event, waking all coroutines waiting for it.                                                   | No                |
+| `clear()`                            | Method     | Clears the event, so coroutines will wait again.                                                        | No                |
+| `wait()`                             | Method     | Waits until the event is set.                                                                           | Yes               |
+| `is_set()`                           | Method     | Returns `True` if the event is set.                                                                      | No                |
+
+
+### **`asyncio.Queue` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `put(item)`                          | **Yes**             | Puts an item into the queue.                                                                         |
+| `get()`                              | **Yes**             | Retrieves an item from the queue.                                                                    |
+| `empty()`                            | No                  | Checks if the queue is empty, no need to await.                                                      |
+| `full()`                             | No                  | Checks if the queue is full, no need to await.                                                       |
+
+
+
+### **`asyncio.Server` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `start()`                            | **Yes**             | Starts accepting connections asynchronously.                                                         |
+| `close()`                            | No                  | Closes the server, no need to await.                                                                 |
+| `wait_closed()`                      | **Yes**             | Awaits until the server is completely closed.                                                        |
+
+
+
+### **`asyncio.Protocol` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `connection_made(transport)`         | No                  | Called when a connection is made, no need to await.                                                  |
+| `data_received(data)`                | No                  | Called when data is received, not awaited.                                                           |
+| `connection_lost(exc)`               | No                  | Called when the connection is lost, not awaited.                                                     |
+
+
+
+### **`asyncio.Transport` Class Methods**
+
+| **Member**                           | **Await Required?** | **Notes**                                                                                           |
+|--------------------------------------|---------------------|-----------------------------------------------------------------------------------------------------|
+| `write(data)`                        | No                  | Writes data to the transport, no need to await.                                                      |
+| `close()`                            | No                  | Closes the transport, no need to await.                                                              |
+| `get_extra_info(name)`               | No                  | Retrieves extra information, no need to await.                                                       |
+
+
+
 Summary
 ---
 -  Multithreading and multiprocessing run single-threaded code without modification
