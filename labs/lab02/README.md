@@ -144,6 +144,49 @@ dt2uts = dttm.timestamp()
 print(f"{dttm}->{dt2uts}") # sample output: 2024-09-13 10:59:48.754367->1726239588.754367
 ```
 
+**👉 UTC time vs. local time**
+
+- **UTC (Coordinated Universal Time)** is the time standard used worldwide. 
+  - It is not subject to Daylight Saving Time and does not change with the seasons. 
+  - UTC is the same everywhere in the world and serves as the reference point for timekeeping.
+
+- Difference Between UTC Time and Local Time
+  - **UTC Time**: A time standard that is consistent worldwide and does not change with seasons.
+  - **Local Time**: The time as observed in a particular time zone. 
+    - It varies by geographical location and can change with Daylight Saving Time.
+    - Local time is typically expressed as an offset from UTC. For example:
+      - **New York (Eastern Time)**: UTC-5 (5 hours behind UTC) or UTC-4 (4 hours behind UTC during Daylight Saving Time)
+      - **London (Greenwich Mean Time)**: UTC+0 or UTC+1 (1 hour ahead of UTC) (during Daylight Saving Time)
+
+- Conversion Between UTC Time and Local Time Using Python
+
+```python
+from datetime import datetime
+import pytz
+
+# 1. **Convert Local Time to UTC Time**
+# Create a local datetime object (e.g., New York time)
+local_tz = pytz.timezone('America/New_York')
+local_time = local_tz.localize(datetime(2024, 9, 13, 12, 34, 56))
+
+# Convert local time to UTC
+utc_time = local_time.astimezone(pytz.utc)
+
+print(f"Local time: {local_time}")
+print(f"UTC time: {utc_time}")
+
+# 2. **Convert UTC Time to Local Time**
+# Create a UTC datetime object
+utc_time = datetime.utcnow().replace(tzinfo=pytz.utc)
+
+# Convert UTC time to local time (e.g., New York time)
+local_tz = pytz.timezone('America/New_York')
+local_time = utc_time.astimezone(local_tz)
+
+print(f"UTC time: {utc_time}")
+print(f"Local time: {local_time}")
+```
+
 
 # NTP Field Values to Raw Data Conversion
 
