@@ -106,11 +106,13 @@ NTP packets are typically 48 bytes long and contain several fields. Here's a bre
     - Formula: `_parse_timestamp(raw_data[40:48])`
     - Explanation: Bytes 41-48, interpreted as NTP timestamp format
 
-NTP Timestamp parsing function:
+**👉 NTP Timestamp parsing function**:
 ```python
 def _parse_timestamp(raw_timestamp):
     """Convert a 64-bit NTP timestamp to a floating point number of seconds since the epoch."""
     int_part, frac_part = struct.unpack('!II', raw_timestamp)
+    # NTP timestamp in floating seconds = int_part + frac_part / 2**32
+    # Unix timestamp in floating seconds = NTP timestamp in floating seconds - 2208988800
     return int_part + frac_part / 2**32 - 2208988800  # Subtract seconds between 1900 and 1970
 ```
 
@@ -118,6 +120,30 @@ Note: The NTP timestamp is a 64-bit fixed-point number, where the first 32 bits 
 
 1.  The $\displaystyle \text{Corrected time} = t3 + \frac{(t1 - t0) + (t2 - t3)}{2}$
     - $t3$ is the time when the client received the ntp packet
+
+
+**👉 Unix timestamp vs. datetime**
+```python
+import time
+from datetime import datetime
+
+# 1. get current time in unix timestamp
+unix_timestamp = time.time()
+print("current time in Unix timestamp: ", unix_timestamp) # sample output: current time in Unix timestamp:  1726238781.0123541
+
+# convert unix timestamp to datetime
+uts2dt = datetime.fromtimestamp(unix_timestamp)
+print(f"{unix_timestamp} -> {uts2dt}") # sample output: 1726238781.0123541 -> 2024-09-13 10:46:21.012354
+
+# 2. get current time in datetime
+dttm = datetime.now()
+print("Current time  in datetime: ", dttm) # sample output: Current time  in datetime:  2024-09-13 10:59:48.754367
+
+# convert datetime to unix timestamp
+dt2uts = dttm.timestamp()
+print(f"{dttm}->{dt2uts}") # sample output: 2024-09-13 10:59:48.754367->1726239588.754367
+```
+
 
 # NTP Field Values to Raw Data Conversion
 
