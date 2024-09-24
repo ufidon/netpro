@@ -67,6 +67,8 @@ if __name__ == "__main__":
 
 - 🎏 💻 server and client output
 - 🎏 point out and analyze the problems 
+- 🎏 In the client, change the receive buffer `1024` in line `data = conn.recv(1024)` to be `1, 10, 20, 100` separately and run the programs, i.e. run 4 times, one for each modification, describe and analyze the output
+- 🎏 Repeat the modification in the server, run the programs, describe and analyze the output
 
 ---
 
