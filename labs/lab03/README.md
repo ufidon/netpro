@@ -18,7 +18,7 @@ This lab consists of four tasks that will demonstrate the need for stream framin
 
 ---
 
-### Task 1Problematic programs
+### Task 1: Problematic programs
 
 - In this task, you'll run the simple chat server and client below to observe how messages are received with problems, i.e. the boundaries between messages are unclear.
 
