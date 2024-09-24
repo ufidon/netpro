@@ -4,25 +4,25 @@
 
 TCP (Transmission Control Protocol) is a reliable, connection-oriented protocol. Unlike UDP, which works with discrete packets, TCP treats data as a continuous stream of bytes. This means that if you send a message "Hello" followed by "World", the receiver may receive "HelloWorld" or "Hell" and "oWorld", depending on network conditions. This can lead to problems when parsing messages, as the boundaries between messages can become unclear.
 
+
 **Stream Framing** is the method used to ensure that messages are properly delimited and interpreted as discrete entities. There are several techniques to frame TCP messages:
 
 1. **Delimiter-Based Framing**: Each message ends with a special delimiter (e.g., `'\n'` or `'\0'`).
 2. **Length-Prefix Framing**: Each message is prefixed with its length, so the receiver knows how many bytes to read for each message.
 
+⚠️: **Required screenshots are noted with 💻**
+
 ### Lab Tasks
 
-This lab consists of three tasks that will demonstrate the need for stream framing and three common framing techniques.
+This lab consists of four tasks that will demonstrate the need for stream framing and three common framing techniques.
 
 ---
 
-### Task 1: Chat Server/Client With Ping-pong Style
+### Problematic programs
 
-In this task, you'll create a simple chat server and client to observe how messages are received with ping-pong, i.e. framing stream in both directions alternatively.
+- In this task, you'll run the simple chat server and client below to observe how messages are received with problems, i.e. the boundaries between messages are unclear.
 
-#### 1.1 Server Code
-
-The server will accept connections from clients and simply echo back any data it receives.
-
+#### 0.1 Server Code
 ```python
 import socket
 
@@ -46,7 +46,63 @@ if __name__ == "__main__":
     chat_server()
 ```
 
-#### 1.2 Client Code
+#### 0.2 Client code
+```python
+import socket
+
+def chat_client(host='127.0.0.1', port=12345):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+        client_socket.connect((host, port))
+        
+        messages = ["Hello", "World", "How are you?"]
+        for msg in messages:
+            client_socket.sendall(msg.encode('utf-8'))
+            
+        data = client_socket.recv(1024)
+        print(f"Received from server: {data.decode('utf-8')}")
+
+if __name__ == "__main__":
+    chat_client()
+```
+
+- 🎏 💻 server and client output
+- 🎏 point out and analyze the problems 
+
+---
+
+### Task 2: Chat Server/Client With Ping-pong Style
+
+In this task, you'll create a simple chat server and client to observe how messages are received with ping-pong, i.e. framing stream in both directions alternatively.
+
+#### 2.1 Server Code
+
+The server will accept connections from clients and simply echo back any data it receives.
+
+```python
+import socket
+
+def chat_server(host='127.0.0.1', port=12345):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.bind((host, port))
+        server_socket.listen(1)
+        print(f"Server started at {host}:{port}, waiting for connections...")
+        
+        conn, addr = server_socket.accept()
+        with conn:
+            print(f"Connected by {addr}")
+            while True:
+                data = conn.recv(1024)
+                if not data:
+                    break
+                
+                print(f"Received: {data.decode('utf-8')}")
+                conn.sendall(data)
+
+if __name__ == "__main__":
+    chat_server()
+```
+
+#### 2.2 Client Code
 
 The client will connect to the server and send multiple messages sequentially.
 
@@ -60,8 +116,10 @@ def chat_client(host='127.0.0.1', port=12345):
         messages = ["Hello", "World", "How are you?"]
         for msg in messages:
             client_socket.sendall(msg.encode('utf-8'))
-            data = client_socket.recv(1024)
-            print(f"Received from server: {data.decode('utf-8')}")
+            
+            
+        data = client_socket.recv(1024)
+        print(f"Received from server: {data.decode('utf-8')}")
 
 if __name__ == "__main__":
     chat_client()
@@ -69,7 +127,8 @@ if __name__ == "__main__":
 
 #### Modification
 
-- Modify the server and then the client to generate the following sample output
+- 🎏 Modify the server and then the client to generate the following sample output 💻
+- 🎏 Explain the ping-pong framing with your code added
 
 - server output
 ```
@@ -96,11 +155,11 @@ Client (127.0.0.1:36504) received from Server (127.0.0.1:12345): SIMPLE IS BETTE
 
 ---
 
-### Task 2: Delimiter-Based Framing
+### Task 3: Delimiter-Based Framing
 
 In this task, you'll modify the server and client to use a delimiter (e.g., newline `\n`) to frame messages.
 
-#### 2.1 Server Code with Delimiter Framing
+#### 3.1 Server Code with Delimiter Framing
 
 ```python
 import socket
@@ -120,16 +179,15 @@ def chat_server_delimiter(host='127.0.0.1', port=12345):
                 if not data:
                     break
                 buffer += data
-                while "\n" in buffer:
-                    message, buffer = buffer.split("\n", 1)
-                    print(f"Received: {message}")
-                    conn.sendall((message + "\n").encode('utf-8'))
+
+            print(f"Received: {buffer}")
+            conn.sendall((buffer + "\n").encode('utf-8'))
 
 if __name__ == "__main__":
     chat_server_delimiter()
 ```
 
-#### 2.2 Client Code with Delimiter Framing
+#### 3.2 Client Code with Delimiter Framing
 
 ```python
 import socket
@@ -141,8 +199,11 @@ def chat_client_delimiter(host='127.0.0.1', port=12345):
         messages = ["Hello\n", "World\n", "How are you?\n"]
         for msg in messages:
             client_socket.sendall(msg.encode('utf-8'))
-            data = client_socket.recv(1024).decode('utf-8')
-            print(f"Received from server: {data.strip()}")
+
+        client_socket.shutdown(socket.SHUT_WR)
+        
+        data = client_socket.recv(1024).decode('utf-8')
+        print(f"Received from server: {data.strip()}")
 
 if __name__ == "__main__":
     chat_client_delimiter()
@@ -150,8 +211,9 @@ if __name__ == "__main__":
 
 #### Modification
 
-- Add message delimiting to the client to receive separate message as the server
-- Modify both the server and client to generate the following sample output
+- 🎏 Modify the server and then the client to generate the following sample output 💻
+- 🎏 Explain the delimiter-based framing with your code added
+  - use `\n` as the delimiter
 
 - server output
 ```
@@ -179,11 +241,11 @@ Client (127.0.0.1:60336) received from Server (127.0.0.1:12345): SIMPLE IS BETTE
 
 ---
 
-### Task 3: Length-Prefix Framing
+### Task 4: Length-Prefix Framing
 
 In this task, you'll modify the server and client to use a length-prefix framing method, where each message is prefixed with its length in bytes.
 
-#### 3.1 Server Code with Length-Prefix Framing
+#### 4.1 Server Code with Length-Prefix Framing
 
 ```python
 import socket
@@ -199,6 +261,7 @@ def chat_server_length_prefix(host='127.0.0.1', port=12345):
         with conn:
             print(f"Connected by {addr}")
             buffer = b""
+            message = ""
             while True:
                 data = conn.recv(1024)
                 if not data:
@@ -209,17 +272,18 @@ def chat_server_length_prefix(host='127.0.0.1', port=12345):
                     length = struct.unpack('!I', buffer[:4])[0]
                     if len(buffer) < 4 + length:
                         break
-                    message = buffer[4:4 + length].decode('utf-8')
+                    message += buffer[4:4 + length].decode('utf-8')
                     buffer = buffer[4 + length:]
-                    print(f"Received: {message}")
-                    response = message.encode('utf-8')
-                    conn.sendall(struct.pack('!I', len(response)) + response)
+
+            print(f"Received: {message}")
+            response = message.encode('utf-8')
+            conn.sendall(struct.pack('!I', len(response)) + response)
 
 if __name__ == "__main__":
     chat_server_length_prefix()
 ```
 
-#### 3.2 Client Code with Length-Prefix Framing
+#### 4.2 Client Code with Length-Prefix Framing
 
 ```python
 import socket
@@ -235,12 +299,14 @@ def chat_client_length_prefix(host='127.0.0.1', port=12345):
             encoded_msg = msg.encode('utf-8')
             length_prefix = struct.pack('!I', len(encoded_msg))
             client_socket.sendall(length_prefix + encoded_msg)
-            
-            # Receive message back with length prefix
-            length_prefix = client_socket.recv(4)
-            length = struct.unpack('!I', length_prefix)[0]
-            data = client_socket.recv(length)
-            print(f"Received from server: {data.decode('utf-8')}")
+
+        client_socket.shutdown(socket.SHUT_WR)
+        
+        # Receive message back with length prefix
+        length_prefix = client_socket.recv(4)
+        length = struct.unpack('!I', length_prefix)[0]
+        data = client_socket.recv(length)
+        print(f"Received from server: {data.decode('utf-8')}")
 
 if __name__ == "__main__":
     chat_client_length_prefix()
@@ -248,8 +314,9 @@ if __name__ == "__main__":
 
 #### Modification
 
-- Add length-prefix framing to the client to receive separate message
-- Modify both the server and client to generate the following sample output
+- 🎏 Modify the server and then the client to generate the following sample output 💻
+- 🎏 Explain the length-prefixing framing with your code added
+
 - Server output
 ```
 python3 s3.py 
@@ -279,3 +346,5 @@ Client (127.0.0.1:41358) received from Server (127.0.0.1:12345): SIMPLE IS BETTE
 ### Summary
 
 This lab demonstrated why stream framing is essential in TCP programming and showed three common techniques: ping-pong style, delimiter-based and length-prefix framing. Understanding and implementing these techniques ensures that your TCP-based applications can correctly parse and process messages.
+
+- 🎏 compare the advantages and disadvantages of the 3 framing schemes you implemented
