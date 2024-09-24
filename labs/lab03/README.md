@@ -18,11 +18,11 @@ This lab consists of four tasks that will demonstrate the need for stream framin
 
 ---
 
-### Problematic programs
+### Task 1Problematic programs
 
 - In this task, you'll run the simple chat server and client below to observe how messages are received with problems, i.e. the boundaries between messages are unclear.
 
-#### 0.1 Server Code
+#### 1.1 Server Code
 ```python
 import socket
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     chat_server()
 ```
 
-#### 0.2 Client code
+#### 1.2 Client code
 ```python
 import socket
 
