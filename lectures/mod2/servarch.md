@@ -727,6 +727,11 @@ Summary
 - Deployment of servers is another big topic
 
 
+## Third-party Asynchronous Libraries
+- [Curio - a coroutine-based library](https://github.com/dabeaz/curio)
+- [Trio – a friendly Python library for async concurrency and I/O](https://github.com/python-trio/trio)
+- [uvloop - a fast, drop-in replacement of the built-in asyncio event loop](https://github.com/MagicStack/uvloop)
+
 
 # References
 - [asyncio — Asynchronous I/O](https://docs.python.org/3/library/asyncio.html)
