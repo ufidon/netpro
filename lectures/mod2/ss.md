@@ -63,24 +63,22 @@ Python 3.4+ Default Contexts
 
 🖊️ Practice
 ---
-- Go through the source code of [safe_tls.py](./ss/safe_tls.py)
+- Go through the source code of 
+  - [ssl server](./ss/s1.py)
+  - [ssl client](./ss/c1.py)
 
 ```bash
 # open two terminals, and play with the following scenarios
 # one terminal runs server, the other runs client
 # 1. run the server
-python3  safe_tls.py -s localhost.pem '' 1060
+python3  s1.py
 
-# 2.1 run the client without ca file
-# both the client and server will be crashed
-python3 safe_tls.py localhost 1060
-
-# 2.2 run the client with ca file after rerun the server first
-python3 safe_tls.py -a ca.crt localhost 1060
+# 2. run the client with ca file
+python3 c1.py
 
 # 3. use wireshark to capture and analyze the whole communication
 # or with tcpdump
-tcpdump -n port 1060 -i lo -X
+tcpdump -n port 8443 -i lo -X
 ```
 
 
