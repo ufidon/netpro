@@ -393,6 +393,7 @@ SSL ensures that the data sent over the network is encrypted, making it unreadab
   ```bash
   openssl req -new -x509 -days 365 -nodes -out server.crt -keyout server.key
   ```
+- 💻 Sample output: identical to Task 1
 
 ---
 
@@ -420,7 +421,7 @@ The easiest way to decrypt the traffic in this case is to log the session keys u
 
    - Set the `SSLKEYLOGFILE` environment variable on the client-side before running the FTP client.
      ```bash
-     export SSLKEYLOGFILE=/path/to/sslkeys.log
+     export SSLKEYLOGFILE=./sslkeys.log
      ```
 2. **Run the FTP Client**:
    Run the FTP client as usual. This will generate a log file `sslkeys.log` containing the session keys for the encrypted traffic.
