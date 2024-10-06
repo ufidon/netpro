@@ -199,7 +199,73 @@ By the end of this lab, you will:
 
 - 🎏 Improve the USER and PASS command so that the user can enter them in the console
   - Handle wrong user name and password correspondingly
+- 💻 Sample output:
 
+```
+# Server output: python3 ftpServer.py 
+FTP server listening on 0.0.0.0:2121
+Accepted connection from ('127.0.0.1', 46500)
+Received command: USER Alice
+Received command: USER user
+Received command: PASS 123
+Received command: PASS password
+Received command: LIST
+Received command: PASV
+Received command: RETR to.txt
+Received command: RETR todown.txt
+Received command: PASV
+Received command: STOR toup.txt
+Received command: PASV
+Received command: QUIT
+
+# Client output:  python3 ftpClient.py 
+Server: 220 Welcome to Simple FTP Server
+ftp>  
+ftp> HELP
+Invalid command before authenticated. Available commands: USER username, PASS password
+ftp> USER
+Illegal USER command.
+ftp> USER Alice
+Server response: 332 Username incorrect.
+ftp> USER user
+Server response: 331 Username okay, need password.
+ftp> PASS
+Illegal PASS command.
+ftp> PASS 123
+Server response: 530 Password incorrect.
+ftp> PASS password
+Server response: 230 User logged in, proceed.
+ftp> HELP
+Invalid command after authenticated. Available commands: LIST, RETR <filename>, STOR <filename>, QUIT
+ftp> LIST
+Server response: 150 Here comes the directory listing.
+Server response: 227 Entering Passive Mode (0,0,0,0,168,231)
+Directory listing:
+test_file.txt
+secret.txt
+
+sec.txt
+SpacePalace.jpg
+
+todown.txt
+
+Server response: 226 Directory send OK.
+ftp> RETR to.txt
+Server response: 550 File not found.
+ftp> RETR todown.txt
+Server response: 150 File status okay; about to open data connection.
+Server response: 227 Entering Passive Mode (0,0,0,0,169,59)
+Downloaded todown.txt
+Server response: 226 Transfer complete.
+ftp> STOR toup.txt
+Server response: 150 Ready to receive data.
+Server response: 227 Entering Passive Mode (0,0,0,0,229,105)
+Uploaded toup.txt
+Server response: 226 Transfer complete.
+ftp> QUIT
+Server response: 221 Goodbye.
+Connection closed. Exiting.
+```
 
 # **Task 2: Use FTP Client to Download an Image and Sniff with Wireshark**
 - Put a JPEG image in the the `ftp_root` folder
