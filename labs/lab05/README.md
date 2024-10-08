@@ -199,32 +199,34 @@ By the end of this lab, you will:
 
 - 🎏 Improve the USER and PASS command so that the user can enter them in the console
   - Handle wrong user name and password correspondingly
+- 🎏 Add number of bytes of data transferred for commands: LIST, STOR, and RETR
 - 💻 Sample output:
 
 ```
 # Server output: python3 ftpServer.py 
 FTP server listening on 0.0.0.0:2121
-Accepted connection from ('127.0.0.1', 46500)
+Accepted connection from ('127.0.0.1', 51482)
 Received command: USER Alice
 Received command: USER user
 Received command: PASS 123
 Received command: PASS password
 Received command: LIST
 Received command: PASV
-Received command: RETR to.txt
-Received command: RETR todown.txt
+Received command: RETR Sky.jpg
+Received command: RETR SkyPalace.jpg
 Received command: PASV
-Received command: STOR toup.txt
+Received command: STOR SkyShip.jpg
+Received command: PASV
+Received command: LIST
 Received command: PASV
 Received command: QUIT
 
+
 # Client output:  python3 ftpClient.py 
 Server: 220 Welcome to Simple FTP Server
-ftp>  
+ftp> 
 ftp> HELP
 Invalid command before authenticated. Available commands: USER username, PASS password
-ftp> USER
-Illegal USER command.
 ftp> USER Alice
 Server response: 332 Username incorrect.
 ftp> USER user
@@ -239,36 +241,38 @@ ftp> HELP
 Invalid command after authenticated. Available commands: LIST, RETR <filename>, STOR <filename>, QUIT
 ftp> LIST
 Server response: 150 Here comes the directory listing.
-Server response: 227 Entering Passive Mode (0,0,0,0,168,231)
+Server response: 227 Entering Passive Mode (0,0,0,0,217,213)
 Directory listing:
-test_file.txt
-secret.txt
+SkyPalace.jpg
 
-sec.txt
-SpacePalace.jpg
-
-todown.txt
-
-Server response: 226 Directory send OK.
-ftp> RETR to.txt
+Server response: 226 Directory send OK. 15 bytes transferred.
+ftp> RETR Sky.jpg
 Server response: 550 File not found.
-ftp> RETR todown.txt
+ftp> RETR SkyPalace.jpg
 Server response: 150 File status okay; about to open data connection.
-Server response: 227 Entering Passive Mode (0,0,0,0,169,59)
-Downloaded todown.txt
-Server response: 226 Transfer complete.
-ftp> STOR toup.txt
+Server response: 227 Entering Passive Mode (0,0,0,0,148,171)
+Downloaded SkyPalace.jpg with 105241 bytes.
+Server response: 226 Transfer complete. 105241 bytes transferred.
+ftp> STOR SkyShip.jpg
 Server response: 150 Ready to receive data.
-Server response: 227 Entering Passive Mode (0,0,0,0,229,105)
-Uploaded toup.txt
-Server response: 226 Transfer complete.
+Server response: 227 Entering Passive Mode (0,0,0,0,152,77)
+Uploaded SkyShip.jpg with 105241 bytes.
+Server response: 226 Transfer complete. 105241 bytes transferred.
+ftp> LIST
+Server response: 150 Here comes the directory listing.
+Server response: 227 Entering Passive Mode (0,0,0,0,150,29)
+Directory listing:
+SkyPalace.jpg
+SkyShip.jpg
+
+Server response: 226 Directory send OK. 32 bytes transferred.
 ftp> QUIT
 Server response: 221 Goodbye.
 Connection closed. Exiting.
 ```
 
 # **Task 2: Use FTP Client to Download an Image and Sniff with Wireshark**
-- Put a JPEG image in the the `ftp_root` folder
+- Put a JPEG image, such as [SkyPalace](./code/SkyPalace.jpg), into the `ftp_root` folder
 - Download the JPEG image file from the FTP server and capture the network traffic using Wireshark.
 
 ## **Instructions**:
@@ -276,16 +280,19 @@ Connection closed. Exiting.
    - Capture traffic on the network interface used by the FTP server and client.
    - Filter traffic using:
      ```plaintext
-     tcp.port == 21
+     tcp.port == 2121 # Your FTP port number in your code, unnecessary the standard 21
      ```
 
 2. **Download an Image**:
-   - Use the FTP client to download an image from the server (`SpacePalace.jpg`).
+   - Use the FTP client to download an image from the server such as (`SkyPalace.jpg`).
 
 3. **Analyze the Packets**:
    - 🎏 Find the user name and password in the captured packets
+     - 💻 captured user credential
    - 🎏 Analyze the captured packets to locate the image data. 
      - Reconstruct the image by extracting the raw bytes.
+     - 💻 captured SOI, image data, and EOI
+     - 💻 reconstructed image
 
 👉 How to retrieve a JPEG image from sniffed TCP raw packets?
 
@@ -331,13 +338,15 @@ Connection closed. Exiting.
 
 # **Task 3: Secure the FTP Server and Client with SSL**
 
-SSL ensures that the data sent over the network is encrypted, making it unreadable to anyone intercepting the packets.
+SSL ensures that the command and data sent over the network is encrypted, making it unreadable to anyone intercepting the packets.
 - 🎏 Improve on the code your completed in Task 1.
 
 ## **Instructions**:
 1. **Modify the Server**:
-   - 🎏 Use Python’s `ssl` library to wrap the server socket with SSL.
+   - 🎏 Use Python’s `ssl` library to wrap the server command socket with SSL.
+   - 🎏 Wrap the ephemeral data socket with ssl context as well.
    - SSL-Wrapped Server Reference Code:
+     - ⚠️ only command socket is shown here.
       ```python
       import socket
       import ssl
@@ -368,8 +377,10 @@ SSL ensures that the data sent over the network is encrypted, making it unreadab
       ```
 
 2. **Modify the Client**:
-   - 🎏 Wrap the client’s socket with SSL as well.
+   - 🎏 Wrap the client’s command socket with SSL.
+   - 🎏 Wrap the client’s data socket with SSL as well.
    - SSL-Wrapped Client Reference Code:
+     - ⚠️ only command socket is shown here.
       ```python
       import socket
       import ssl
@@ -426,6 +437,7 @@ The easiest way to decrypt the traffic in this case is to log the session keys u
 2. **Run the FTP Client**:
    Run the FTP client as usual. This will generate a log file `sslkeys.log` containing the session keys for the encrypted traffic.
 
+   - 💻 the content of `sslkeys.log`
 3. **Capture the Traffic with Wireshark**:
    - Use Wireshark to capture the encrypted traffic during the FTP session.
    - Save the capture file.
@@ -439,6 +451,9 @@ The easiest way to decrypt the traffic in this case is to log the session keys u
 5. **Analyze the Traffic**:
    - Wireshark should now use the session keys to decrypt the SSL/TLS traffic.
    - You can view the plaintext data, including the user credential and the image.
+   - 💻 user credential
+   - 💻 SOI, image data, and EOI
+   - 💻 Reconstructed image
 
 ---
 
