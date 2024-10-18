@@ -1,10 +1,10 @@
 ## Peer-to-Peer (P2P) Programming
 
 ### Overview:
-This lab introduces we to the fundamentals of peer-to-peer (P2P) networking by creating a simple file-sharing application using Python. We will incrementally implement a P2P program where multiple peers can connect, share files, and download files from each other.
+This lab introduces you to the fundamentals of peer-to-peer (P2P) networking by creating a simple file-sharing application using Python. You will incrementally implement a P2P program where multiple peers can connect, share files, and download files from each other.
 
 In your report, 
-- 🎏 explain the code we added or modified
+- 🎏 explain the code you added or modified
 - 💻 illustrate with screenshots of corresponding outputs
 
 
@@ -18,7 +18,7 @@ In your report,
 
 ### Task 1: **Get Familiar with P2P Programming for File Sharing**
 
-In this task, we will study a basic P2P system where each peer (node) can act as both a client and a server. This will help we understand the flow of file sharing in a P2P network.
+In this task, you will study a basic P2P system where each peer (node) can act as both a client and a server. This will help you understand the flow of file sharing in a P2P network.
 
 🎏 **Understand the key components**:
    - `Server`: Waits for incoming connections from other peers and responds to requests.
@@ -129,23 +129,23 @@ In this task, we will study a basic P2P system where each peer (node) can act as
 
 Finding peers in a Peer-to-Peer (P2P) network is a crucial step in establishing connections between 
 nodes. Typically peers can be found starting from a bootstrap list of peers. This list typically contains a small number 
-of well-connected and stable peers in the network. Once connected to a seed peer, we discover other peers in the network by querying the seed peer for 
+of well-connected and stable peers in the network. Once connected to a seed peer, you discover other peers in the network by querying the seed peer for 
 information about nearby peers. This can be done using a protocol such as:
 
 - DHT (Distributed Hash Table) queries
 - Peer-to-peer gossip protocols
 - Social networking-style updates
 
-Then, we store the discovered peers locally and update the local peer list periodically to reflect changes in the 
+Then, you store the discovered peers locally and update the local peer list periodically to reflect changes in the 
 network.
 
-For simplicity, we run all nodes on the same computer so we use `port number` as `node/peer id`, and the node ids range from `5000 to 5009`. 
+For simplicity, you run all nodes on the same computer so you use `port number` as `node/peer id`, and the node ids range from `5000 to 5009`. 
 
 In real-world P2P networks:
 - The number of nodes are not limited
 - The `id` of a node is NOT bound to its port number. IP addresses and GUIDs (Globally Unique Identifications) may be used.
 
-🎏 Complete Task 2 on the basic P2P program `p2p1.py` we completed in Task 1.
+🎏 Complete Task 2 on the basic P2P program `p2p1.py` you completed in Task 1.
   - 🎏 Discover active peers, i.e. implement command `scan`.
   - 🎏 List connected peers, i.e. implement command `lp`.
   - 🎏 Connect to selected peers, update the list of connected peers, i.e. implement command `connect <peer_id>`.
@@ -345,11 +345,11 @@ print(hint)
 
 ### Task 3: **Search for Shared Files**
 
-In this task, we will 
+In this task, you will 
 - 🎏 implement functionality to search for specified shared files on the connected peers.
 - 🎏 handle `search requests` from peers.
 
-Since each peer maintains a list of known peers (IP and port), port (peer id) only in this simplified lab, to connect to, we can implement a mechanism to ask for a shared file from its connected peers only for simplicity.
+Since each peer maintains a list of known peers (IP and port), port (peer id) only in this simplified lab, to connect to, you can implement a mechanism to ask for a shared file from its connected peers only for simplicity.
 
 #### Reference Code:
 
@@ -390,7 +390,7 @@ def handle_peer(self, response_socket, peer_id):
 
 # Function to search for a file from another peer
 def search_file(self, filename):
-    # we search among the connected peers only
+    # you search among the connected peers only
     msg = f'SRCH {filename}'
     lostconnections = []
     for pid, psock in self.request_sockets.items():
@@ -474,7 +474,7 @@ def search_file(self, filename):
 
 ### Task 4: **Download Files from Peers**
 
-In this task, we will implement the file download functionality, where one peer can request a file from another peer and download it.
+In this task, you will implement the file download functionality, where one peer can request a file from another peer and download it.
 
 - 🎏 **File Request**:  
    Implement a function that requests a specific file from a peer.
@@ -492,7 +492,7 @@ In this task, we will implement the file download functionality, where one peer 
 file_path = os.path.join(self.shared_dir, filename)
 if os.path.exists(file_path):
     # let's use TCP stream framing `Length-prefix` here
-    # since we don't close the connection after each request
+    # since you don't close the connection after each request
     hint = f'250 {filename} found.'
     lhint = f'{hint:40}' # 40 bytes for the response
     data = b''
@@ -592,7 +592,7 @@ def recvall(self, peer_id, length):
 ---
 
 ### Lab Conclusion:
-In this lab, we learned how to create a simple P2P file-sharing system in Python. We implemented console-based interaction, peer discovery, file requests, and graceful shutdown of peers. This lab provides a foundation for more advanced P2P concepts, such as peer discovery protocols and distributed file systems.
+In this lab, you learned how to create a simple P2P file-sharing system in Python. You implemented console-based interaction, peer discovery, file requests, and graceful shutdown of peers. This lab provides a foundation for more advanced P2P concepts, such as peer discovery protocols and distributed file systems.
 
 ---
 
