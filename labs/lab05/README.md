@@ -1,469 +1,614 @@
-# Securing Socket Communication with SSL
+## Peer-to-Peer (P2P) Programming
 
-## Overview
-In this lab, you will enhance a toy FTP server and client from the provided reference code, understand the importance of securing data transmission, and implement SSL to protect data from being captured by tools like Wireshark. 
+### Overview:
+This lab introduces we to the fundamentals of peer-to-peer (P2P) networking by creating a simple file-sharing application using Python. We will incrementally implement a P2P program where multiple peers can connect, share files, and download files from each other.
 
 In your report, 
-- 🎏 explain the code you added or modified
+- 🎏 explain the code we added or modified
 - 💻 illustrate with screenshots of corresponding outputs
 
----
 
-## Get Familiar with FTP
-
-**File Transfer Protocol (FTP)** is a standard network protocol used to transfer files between a client and a server over a TCP/IP-based network (like the Internet). FTP allows users to upload, download, rename, delete, and manipulate files and directories on a server. It was designed as an application-layer protocol within the Internet Protocol Suite, operating over TCP/IP.
-
-FTP is defined in **RFC 959** and works based on a client-server architecture. A user (client) connects to an FTP server to perform various operations on files and directories.
-
-
-**Key Concepts of FTP**
-
-1. **Control and Data Connections**: FTP operates using two channels:
-   - **Control Connection (Port 21)**: This connection is used for sending commands and receiving responses. The control connection stays open for the entire session.
-   - **Data Connection (Port 20 or ephemeral port)**: This connection is used for transferring files and directory listings between the client and server. It can either be in **active** or **passive** mode.
-
-2. **Active vs Passive Mode**
-   - **Active Mode**: The client opens a port and waits for the server to connect back to it from the server’s data port (20). The client tells the server which port to use via the `PORT` command.
-   - **Passive Mode (PASV)**: The server opens a random port and informs the client which port to use. The client then establishes the data connection to that server port.
-     - `THIS MODE IS PREFERRED`.
-
-3. **Authentication**
-   - FTP allows for both **anonymous access** and **authenticated access**.
-   - Anonymous access is often used for public FTP servers where users can log in using the username `anonymous` and an email address as a password or without a password.
-   - For authenticated access, the client provides a username (`USER`) and password (`PASS`) to log in.
-
-
-**FTP Communication Flow**
-
-The communication between the FTP client and server typically involves the following steps:
-
-1. **Client Establishes a Control Connection**:
-   - The client initiates a connection to the FTP server on **port 21**.
-   - The server replies with a status code `220` indicating that the FTP service is ready.
-
-2. **Client Sends Login Credentials**:
-   - The client sends the `USER` command followed by the username.
-   - The server responds with `331` (User name okay, need password).
-   - The client then sends the `PASS` command followed by the password.
-   - If the credentials are valid, the server responds with `230` (User logged in, proceed).
-
-3. **Client Issues Commands**:
-   - The client issues FTP commands, such as `LIST` (to list files), `RETR` (to download a file), or `STOR` (to upload a file).
-   - The server responds with status codes (e.g., `150` to indicate file status okay, or `226` to indicate transfer complete).
-
-4. **Establishing Data Connections**:
-   - When the client requests a file transfer (via `RETR`, `STOR`, etc.), the data connection is established:
-     - **Active Mode**: The server connects to the client’s IP and port specified in the `PORT` command.
-     - **Passive Mode**: The client connects to the server’s IP and port specified in the `PASV` command.
-
-5. **Transferring Data**:
-   - The actual file data or directory listing is sent over the data connection.
-   - Once the transfer is complete, the data connection is closed.
-
-6. **Closing the Connection**:
-   - After all transfers and commands are complete, the client can close the session using the `QUIT` command.
-   - The server responds with `221` (Service closing control connection) and terminates the control connection.
-
-
-**FTP Modes of Transfer**
-
-FTP supports two modes for transferring data:
-
-- **ASCII Mode**: Used for text files. In this mode, FTP performs end-of-line character conversions as needed based on the client or server's system.
-- **Binary Mode (Image Mode)**: Used for non-text files like images, videos, or software. In binary mode, the file is transferred byte-for-byte without any conversion.
-  - `THIS MODE IS PREFERRED`.
-
-**FTP Commands and Responses**
-
-1. **Client Commands**:
-   - **USER**: Sends the username to the server for authentication.
-   - **PASS**: Sends the password to the server for authentication.
-   - **LIST**: Lists files and directories in the current directory.
-   - **RETR**: Retrieves a file from the server.
-   - **STOR**: Uploads a file to the server.
-   - **DELE**: Deletes a file on the server.
-   - **CWD**: Changes the current working directory.
-   - **PWD**: Displays the current directory on the server.
-   - **QUIT**: Terminates the connection.
-
-2. **Server Responses** (Status Codes):
-   - **1xx**: Positive Preliminary reply (e.g., `150` – File status okay, about to open data connection).
-   - **2xx**: Positive Completion reply (e.g., `226` – Closing data connection, file transfer successful).
-   - **3xx**: Positive Intermediate reply (e.g., `331` – Username okay, need password).
-   - **4xx**: Transient Negative Completion reply (e.g., `421` – Service not available).
-   - **5xx**: Permanent Negative Completion reply (e.g., `550` – File not available).
-
-**Security in FTP**
-
-FTP, in its basic form, is an **insecure protocol** because it transmits data (including usernames and passwords) in **plain text**. This makes it vulnerable to packet sniffing and Man-in-the-Middle (MITM) attacks.
-
-To secure FTP:
-- 🎏 **FTPS (FTP Secure)**: This is FTP over SSL/TLS. It encrypts the control and data channels, securing the connection.
-- **SFTP (SSH File Transfer Protocol)**: This is a different protocol that runs over SSH (Secure Shell) and provides secure file transfer capabilities.
-
-
-**FTP Commands & Status Codes**
-
-- **Table 1: FTP Protocol Commands**
-
-| **Command**  | **Description**                                               |
-|--------------|---------------------------------------------------------------|
-| `USER`       | Specifies the username for authentication.                    |
-| `PASS`       | Specifies the password for authentication.                    |
-| `LIST`       | Requests a list of files in the current directory.            |
-| `RETR`       | Retrieves (downloads) a file from the server.                 |
-| `STOR`       | Stores (uploads) a file on the server.                        |
-| `DELE`       | Deletes a file from the server.                               |
-| `CWD`        | Changes the working directory on the server.                  |
-| `PWD`        | Displays the current working directory.                       |
-| `MKD`        | Creates a new directory on the server.                        |
-| `RMD`        | Removes a directory on the server.                            |
-| `QUIT`       | Closes the connection to the FTP server.                      |
-| `PORT`       | Specifies the port for the client to listen for data connections (active mode). |
-| `PASV`       | Requests the server to enter passive mode for data connections. |
-| `ABOR`       | Aborts the current file transfer.                             |
-| `RNFR`       | Specifies the file to be renamed (from).                      |
-| `RNTO`       | Renames a file (to).                                          |
-| `NOOP`       | No operation; keeps the connection alive.                     |
-| `SYST`       | Requests the operating system type of the server.             |
-| `TYPE`       | Specifies the data type (ASCII or binary) for file transfers. |
-| `HELP`       | Asks for help or information about FTP commands.              |
-
-
-- **Table 2: FTP Status Codes**
-
-| **Status Code** | **Description**                                               |
-|-----------------|---------------------------------------------------------------|
-| **1xx**         | **Positive Preliminary Reply**: The command is accepted and is being processed, but further action is needed to complete it. |
-| **110**         | Restart marker reply.                                          |
-| **120**         | Service ready in n minutes.                                    |
-| **125**         | Data connection already open; transfer starting.               |
-| **150**         | File status okay; about to open data connection.               |
-| **2xx**         | **Positive Completion Reply**: The requested action has been successfully completed. |
-| **200**         | Command okay.                                                  |
-| **202**         | Command not implemented, but not needed.                      |
-| **211**         | System status, or system help reply.                           |
-| **212**         | Directory status.                                              |
-| **213**         | File status.                                                   |
-| **214**         | Help message.                                                  |
-| **215**         | NAME system type (e.g., UNIX).                                 |
-| **220**         | Service ready for new user.                                    |
-| **221**         | Service closing control connection (Goodbye).                  |
-| **225**         | Data connection open; no transfer in progress.                 |
-| **226**         | Closing data connection; requested file action successful.     |
-| **230**         | User logged in, proceed.                                       |
-| **250**         | Requested file action okay, completed.                         |
-| **257**         | "PATHNAME" created.                                            |
-| **3xx**         | **Positive Intermediate Reply**: The command has been accepted, but further information is needed from the client to complete the action. |
-| **331**         | User name okay, need password.                                 |
-| **332**         | Need account for login.                                        |
-| **350**         | Requested file action pending further information.             |
-| **4xx**         | **Transient Negative Completion Reply**: The command failed but may succeed if reattempted later. |
-| **421**         | Service not available, closing control connection.             |
-| **425**         | Can't open data connection.                                    |
-| **426**         | Connection closed; transfer aborted.                           |
-| **450**         | Requested file action not taken (e.g., file unavailable).      |
-| **451**         | Requested action aborted: local error in processing.           |
-| **452**         | Requested action not taken: insufficient storage.              |
-| **5xx**         | **Permanent Negative Completion Reply**: The command failed and should not be reattempted. |
-| **500**         | Syntax error, command unrecognized.                            |
-| **501**         | Syntax error in parameters or arguments.                       |
-| **502**         | Command not implemented.                                       |
-| **503**         | Bad sequence of commands.                                      |
-| **504**         | Command not implemented for that parameter.                    |
-| **530**         | Not logged in.                                                 |
-| **532**         | Need account for storing files.                                |
-| **550**         | Requested action not taken (e.g., file unavailable).           |
-| **551**         | Requested action aborted: page type unknown.                   |
-| **552**         | Requested file action aborted: exceeded storage allocation.    |
-| **553**         | Requested action not taken: invalid file name.                 |
-
+### Lab Objectives:
+1. Understand how P2P networks work, their major components, and work flows.
+2. Build a simple P2P system where peers share files.
+3. Gracefully handle peer connections and disconnections.
+4. Implement peer discovery, file searching, and file requests between peers.
 
 ---
 
-# **Objective**
-By the end of this lab, you will:
-1. Learn about ftp protocol.
-2. Understand how packet sniffing can expose unencrypted data, such as an image file.
-3. Implement SSL encryption in Python sockets to secure FTP communications.
-4. Observe the difference between sniffing unencrypted and encrypted traffic.
+### Task 1: **Get Familiar with P2P Programming for File Sharing**
 
-- ⚠️ All reference codes are provided for reference only!
----
+In this task, we will study a basic P2P system where each peer (node) can act as both a client and a server. This will help we understand the flow of file sharing in a P2P network.
 
-# **Task 1: Improve the Toy FTP Server and Client**
+🎏 **Understand the key components**:
+   - `Server`: Waits for incoming connections from other peers and responds to requests.
+   - `Client`: Connects to a peer and downloads requested files.
+   - `Shared files directory`: Each peer has a folder containing the files it is willing to share.
+   - `Console`: Command-based user interface, supports the commands below
 
-- Based on the supplied reference code
-  - [FTP server](./code/ftpServer.py)
-  - [FTP client](./code/ftpClient.py)
-
-- 🎏 Improve the USER and PASS command so that the user can enter them in the console
-  - Handle wrong user name and password correspondingly
-- 🎏 Add number of bytes of data transferred for commands: LIST, STOR, and RETR
-- 💻 Sample output:
-
-```
-# Server output: python3 ftpServer.py 
-FTP server listening on 0.0.0.0:2121
-Accepted connection from ('127.0.0.1', 51482)
-Received command: USER Alice
-Received command: USER user
-Received command: PASS 123
-Received command: PASS password
-Received command: LIST
-Received command: PASV
-Received command: RETR Sky.jpg
-Received command: RETR SkyPalace.jpg
-Received command: PASV
-Received command: STOR SkyShip.jpg
-Received command: PASV
-Received command: LIST
-Received command: PASV
-Received command: QUIT
+| Command | Description |
+| --- | --- |
+| `help` / `?` | Show usage of all commands |
+| `scan` | Discover active peers. For demonstration, limit the peer_ids range from 5000 to 5009.  |
+| `lp` | List connected peers. |
+| `connect <peer_id>` | Connect to a peer |
+| `disconnect <peer_id>` | Disconnect from a peer |
+| `sf <filename>` | Search for files on all connected peers |
+| `request <filename> <peer_id>` | Request a file from a peer |
+| `quit` | Quit the program |
 
 
-# Client output:  python3 ftpClient.py 
-Server: 220 Welcome to Simple FTP Server
-ftp> 
-ftp> HELP
-Invalid command before authenticated. Available commands: USER username, PASS password
-ftp> USER Alice
-Server response: 332 Username incorrect.
-ftp> USER user
-Server response: 331 Username okay, need password.
-ftp> PASS
-Illegal PASS command.
-ftp> PASS 123
-Server response: 530 Password incorrect.
-ftp> PASS password
-Server response: 230 User logged in, proceed.
-ftp> HELP
-Invalid command after authenticated. Available commands: LIST, RETR <filename>, STOR <filename>, QUIT
-ftp> LIST
-Server response: 150 Here comes the directory listing.
-Server response: 227 Entering Passive Mode (0,0,0,0,217,213)
-Directory listing:
-SkyPalace.jpg
+🎏 **Complete Task 1 in the basic P2P program**:  
 
-Server response: 226 Directory send OK. 15 bytes transferred.
-ftp> RETR Sky.jpg
-Server response: 550 File not found.
-ftp> RETR SkyPalace.jpg
-Server response: 150 File status okay; about to open data connection.
-Server response: 227 Entering Passive Mode (0,0,0,0,148,171)
-Downloaded SkyPalace.jpg with 105241 bytes.
-Server response: 226 Transfer complete. 105241 bytes transferred.
-ftp> STOR SkyShip.jpg
-Server response: 150 Ready to receive data.
-Server response: 227 Entering Passive Mode (0,0,0,0,152,77)
-Uploaded SkyShip.jpg with 105241 bytes.
-Server response: 226 Transfer complete. 105241 bytes transferred.
-ftp> LIST
-Server response: 150 Here comes the directory listing.
-Server response: 227 Entering Passive Mode (0,0,0,0,150,29)
-Directory listing:
-SkyPalace.jpg
-SkyShip.jpg
-
-Server response: 226 Directory send OK. 32 bytes transferred.
-ftp> QUIT
-Server response: 221 Goodbye.
-Connection closed. Exiting.
-```
-
-# **Task 2: Use FTP Client to Download an Image and Sniff with Wireshark**
-- Put a JPEG image, such as [SkyPalace](./code/SkyPalace.jpg), into the `ftp_root` folder
-- Download the JPEG image file from the FTP server and capture the network traffic using Wireshark.
-
-## **Instructions**:
-1. **Run Wireshark**:
-   - Capture traffic on the network interface used by the FTP server and client.
-   - Filter traffic using:
-     ```plaintext
-     tcp.port == 2121 # Your FTP port number in your code, unnecessary the standard 21
-     ```
-
-2. **Download an Image**:
-   - Use the FTP client to download an image from the server such as (`SkyPalace.jpg`).
-
-3. **Analyze the Packets**:
-   - 🎏 Find the user name and password in the captured packets
-     - 💻 captured user credential
-   - 🎏 Analyze the captured packets to locate the image data. 
-     - Reconstruct the image by extracting the raw bytes.
-     - 💻 captured SOI, image data, and EOI
-     - 💻 reconstructed image
-
-👉 How to retrieve a JPEG image from sniffed TCP raw packets?
-
-- **1. Identify the Image Data in Wireshark**
-  - Look for the data transfer where the image is being downloaded, which might be indicated by a `RETR` command in FTP or by packets carrying a large amount of data.
-
-  - **Identify JPEG Headers and Trailers**:
-    - JPEG files always start with a specific **file signature** known as the "Start of Image" (SOI) marker `0xFFD8`
-    - end with the **End of Image** (EOI) marker `0xFFD9`.
-
-- **2. Follow the TCP Stream**
-  - In Wireshark, the best way to extract the data is by reconstructing the TCP stream.
-  1. **Right-click** on any packet related to the data transfer (in this case, the `RETR` response or a data packet from the server).
-  2. Choose **"Follow" > "TCP Stream"**.
-  3. Wireshark will show you the entire conversation between the client and server in that TCP stream. Look for the image data starting from `FFD8` and ending with `FFD9`.
-
-- **3. Extract only the image data**
-   - In the TCP Stream view, the entire conversation will include both FTP commands and image data. 🎏 You need to isolate the raw binary data of the image (between the `FFD8` and `FFD9` markers).
-   - Copy all the binary data starting from `FFD8` to `FFD9`.
-
-- **4. Save the Raw Data to a File**
-  - Once you've isolated the binary data from the TCP stream:
-  - **Save it as binary data to a file** with a `.jpg` extension.
-  
-- **5. Convert Hex to Binary (Optional)**
-  - If the data is represented in hexadecimal format (which it often is in Wireshark), you may need to convert it into binary before saving it.
-  - You can use a Python script to convert the hex to binary and save it as a `.jpg` file:
-
+- 🎏 Complete Task 1 in the basic P2P program [p2p0.py](./p2p0.py) provided.
+  - 🎏 Implement command `help`, i.e. `?`, or newline only.
+  - 🎏 Add usage to each command.
     ```python
-        # Convert the hex string to binary data
-        binary_data = bytes.fromhex(hex_string)
-
-        # Write the binary data to a file
-        with open(output_filename, 'wb') as file:
-            file.write(binary_data)
+    # Reference code, for example
+    elif commands[0] == "connect":  # connect peer_id
+        if len(commands) == 2:
+            print(f'Connect to peer {commands[1]}')
+        else:
+            print('Usage: connect <peer_id>')
     ```
+  - 🖥️ Explain your code in the report and illustrate with output screenshots
+- 🎏 Describe the major components of this P2P program and how they work together
+- 🎏 Describe a complete file request scenario:
+  - start the program
+  - find active peers
+  - connect to active peers
+  - search for files
+  - request for files
+  - disconnect from peers
+  - quit the program
 
-- **6. Verify the Image**
-  - After saving the file, open it to verify that the image is intact and correct.
-  - If the image does not open, double-check that you have accurately copied the binary data from the TCP stream and that you haven't included extra characters (e.g., FTP protocol information).
-
----
-
-# **Task 3: Secure the FTP Server and Client with SSL**
-
-SSL ensures that the command and data sent over the network is encrypted, making it unreadable to anyone intercepting the packets.
-- 🎏 Improve on the code your completed in Task 1.
-
-## **Instructions**:
-1. **Modify the Server**:
-   - 🎏 Use Python’s `ssl` library to wrap the server command socket with SSL.
-   - 🎏 Wrap the ephemeral data socket with ssl context as well.
-   - SSL-Wrapped Server Reference Code:
-     - ⚠️ only command socket is shown here.
-      ```python
-      import socket
-      import ssl
-      import os
-      import struct
-
-      class SimpleFTPServer:
-          def __init__(self, host='127.0.0.1', port=21):
-              self.host = host
-              self.port = port
-              self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-              self.server_socket.bind((self.host, self.port))
-              self.server_socket.listen(5)
-              self.context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-              self.context.load_cert_chain(certfile="server.crt", keyfile="server.key")
-              print(f"SSL-secured FTP Server started on {self.host}:{self.port}")
-
-          def handle_client(self, client_socket):
-              client_socket.send(b"220 Simple FTP Server Ready\r\n")
-              # Rest of the server code from Task 1 remains unchanged
-
-          def start(self):
-              while True:
-                  client_socket, addr = self.server_socket.accept()
-                  secure_socket = self.context.wrap_socket(client_socket, server_side=True)
-                  print(f"Accepted SSL connection from {addr}")
-                  self.handle_client(secure_socket)
-      ```
-
-2. **Modify the Client**:
-   - 🎏 Wrap the client’s command socket with SSL.
-   - 🎏 Wrap the client’s data socket with SSL as well.
-   - SSL-Wrapped Client Reference Code:
-     - ⚠️ only command socket is shown here.
-      ```python
-      import socket
-      import ssl
-      import struct
-
-      class SimpleFTPClient:
-          def __init__(self, server_ip='127.0.0.1', server_port=21):
-              self.server_ip = server_ip
-              self.server_port = server_port
-              self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-              self.context = ssl.create_default_context()
-          
-          def connect(self):
-              self.client_socket = self.context.wrap_socket(self.client_socket)
-              self.client_socket.connect((self.server_ip, self.server_port))
-              # Rest of the client code from Task 1 remains unchanged
-      ```
-
-👉 **Create self-signed certificates for the server**:
- 
-  ```bash
-  openssl req -new -x509 -days 365 -nodes -out server.crt -keyout server.key
+- 🖥️ Sample output
   ```
-- 💻 Sample output: identical to Task 1
+  python3 p2p1.py
+
+    Enter your port (e.g., 5000, 5001, etc.): 5000
+    >:Node listening on 127.0.0.1:5000
+
+
+    help / ?: Show usage of all commands.
+    scan: Discover active peers. For demonstration, limit the peer_id range from 5000 to 5009.
+    lp: List connected peers.
+    connect <peer_id>: Connect to a peer.
+    disconnect <peer_id>: Disconnect from a peer.
+    sf <filename>: Search for a file on all connected peers.
+    request <filename> <peer_id>: Request a file from a peer.
+    quit: Quit the program.
+
+    >:help
+
+    help / ?: Show usage of all commands.
+    scan: Discover active peers. For demonstration, limit the peer_id range from 5000 to 5009.
+    lp: List connected peers.
+    connect <peer_id>: Connect to a peer.
+    disconnect <peer_id>: Disconnect from a peer.
+    sf <filename>: Search for a file on all connected peers.
+    request <filename> <peer_id>: Request a file from a peer.
+    quit: Quit the program.
+
+    >:?
+
+    help / ?: Show usage of all commands.
+    scan: Discover active peers. For demonstration, limit the peer_id range from 5000 to 5009.
+    lp: List connected peers.
+    connect <peer_id>: Connect to a peer.
+    disconnect <peer_id>: Disconnect from a peer.
+    sf <filename>: Search for a file on all connected peers.
+    request <filename> <peer_id>: Request a file from a peer.
+    quit: Quit the program.
+
+    >:scan
+    Discover active peers.
+    >:lp
+    List connected peers.
+    >:connect 
+    Usage: connect <peer_id>
+    >:connect 5001
+    Connect to peer 5001
+    >:disconnect
+    Usage: disconnect <peer_id>
+    >:disconnect 5001
+    Disconnect from peer 5001
+    >:sf
+    Usage: sf <filename>
+    >:sf SkyPalace.jpg
+    Search for SkyPalace.jpg on all connected peers
+    >:request SkyPalace.jpg
+    Usage: request <filename> <peer_id>
+    >:request SkyPalace.jpg 5001
+    Request file SkyPalace.jpg from peer 5001.
+    >:quit
+    All sockets closed. Exiting program.
+  ```
+
+### Task 2: **Discover and Connect Peers in a P2P Framework**
+
+Finding peers in a Peer-to-Peer (P2P) network is a crucial step in establishing connections between 
+nodes. Typically peers can be found starting from a bootstrap list of peers. This list typically contains a small number 
+of well-connected and stable peers in the network. Once connected to a seed peer, we discover other peers in the network by querying the seed peer for 
+information about nearby peers. This can be done using a protocol such as:
+
+- DHT (Distributed Hash Table) queries
+- Peer-to-peer gossip protocols
+- Social networking-style updates
+
+Then, we store the discovered peers locally and update the local peer list periodically to reflect changes in the 
+network.
+
+For simplicity, we run all nodes on the same computer so we use `port number` as `node/peer id`, and the node ids range from `5000 to 5009`. 
+
+In real-world P2P networks:
+- The number of nodes are not limited
+- The `id` of a node is NOT bound to its port number. IP addresses and GUIDs (Globally Unique Identifications) may be used.
+
+🎏 Complete Task 2 on the basic P2P program `p2p1.py` we completed in Task 1.
+  - 🎏 Discover active peers, i.e. implement command `scan`.
+  - 🎏 List connected peers, i.e. implement command `lp`.
+  - 🎏 Connect to selected peers, update the list of connected peers, i.e. implement command `connect <peer_id>`.
+  - 🎏 Disconnect from selected peers, update the list of connected peers as well, i.e. implement command `disconnect <peer_id>`.
+  - 🖥️ Explain your code in the report and illustrate with output screenshots
+
+#### Reference code:
+```python
+# 1. Function to find active peers
+def scan_peers(self, peer_port):
+    scan_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    scan_socket.settimeout(1) # avoid long waits
+    print(f'Scanning peer {peer_port}...')
+    try:
+        scan_socket.connect((self.host, peer_port))
+        print(f'Peer {peer_port} is active.')
+        scan_socket.close()
+        return (peer_port, True)
+    except (socket.timeout, socket.error):
+        print(f'Peer {peer_port} is inactive.')
+        return (peer_port, False) 
+
+# 2. List connected peers
+print('List connected peers:')
+with self.lock:
+    if not self.request_sockets:
+        print(f'Node {self.port} has no connected peers.')
+    else:
+        print(f'Node {self.port} has connected peers: ', end='')
+        for p in self.request_sockets:
+            print(f'{p} ', end='')
+        print()
+
+# 3. connect peer_id
+print(f'Connect to peer {peer_id}:')
+hint = ''
+with self.lock:
+    if peer_id in self.request_sockets:
+        hint = f'Peer {peer_id} is already connected.'
+    else:
+        request_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            request_socket.connect((self.host, peer_id))
+            hint = f'Peer {peer_id} connected.'
+            self.request_sockets[peer_id] = request_socket
+        except socket.error as e:
+            # print(f'{e=}')                     
+            hint = f'Peer {peer_id} is inactive.'
+print(hint)
+
+# 4. disconnect peer_id
+print(f'Disconnect from peer {peer_id}:')
+hint = ''
+with self.lock:
+    if peer_id not in self.request_sockets:
+        hint = f'Peer {peer_id} is NOT connected.'
+    else:
+        self.request_sockets[peer_id].close()
+        hint = f'Peer {peer_id} disconnected.'
+        self.request_sockets.pop(peer_id)
+print(hint)
+```
+
+- 🖥️ Sample output
+  - Run at least 4 instances, i.e. nodes, to test your code.
+  - ⚠️ System assigned ephemeral port numbers shown as peer ids below just for debug purpose
+  ```
+  # node 5000
+  python3 p2p2.py 
+    Enter your port (e.g., 5000, 5001, etc.): 5000
+    >:Node listening on 127.0.0.1:5000
+
+
+    help / ?: Show usage of all commands.
+    scan: Discover active peers. For demonstration, limit the peer_id range from 5000 to 5009.
+    lp: List connected peers.
+    connect <peer_id>: Connect to a peer.
+    disconnect <peer_id>: Disconnect from a peer.
+    sf <filename>: Search for a file on all connected peers.
+    request <filename> <peer_id>: Request a file from a peer.
+    quit: Quit the program.
+
+    >:scan
+    Discover active peers:
+    Scanning peer 5001...
+    Peer 5001 is inactive.
+    Scanning peer 5002...
+    Peer 5002 is inactive.
+    Scanning peer 5003...
+    Peer 5003 is active.
+    Scanning peer 5004...
+    Peer 5004 is inactive.
+    Scanning peer 5005...
+    Peer 5005 is active.
+    Scanning peer 5006...
+    Peer 5006 is inactive.
+    Scanning peer 5007...
+    Peer 5007 is inactive.
+    Scanning peer 5008...
+    Peer 5008 is inactive.
+    Scanning peer 5009...
+    Peer 5009 is active.
+    >:lp
+    List connected peers:
+    Node 5000 has no connected peers.
+    >:Connection established with peer 37402
+    connect 5003
+    Connect to peer 5003:
+    Peer 5003 connected.
+    >:ls
+    Unknown command.
+    >:lp
+    List connected peers:
+    Node 5000 has connected peers: 5003 
+    >:connect 5005
+    Connect to peer 5005:
+    Peer 5005 connected.
+    >:lp
+    List connected peers:
+    Node 5000 has connected peers: 5003 5005 
+    >:connect 5009
+    Connect to peer 5009:
+    Peer 5009 connected.
+    >:lp
+    List connected peers:
+    Node 5000 has connected peers: 5003 5005 5009 
+    >:disconnect 5003
+    Disconnect from peer 5003:
+    Peer 5003 disconnected.
+    >:lp
+    List connected peers:
+    Node 5000 has connected peers: 5005 5009 
+    >:quit
+    All sockets closed. Exiting program.
+
+  # node 5003
+  python3 p2p2.py
+    Enter your port (e.g., 5000, 5001, etc.): 5003
+    >:Node listening on 127.0.0.1:5003
+    Connection established with peer 38736
+    Connection established with peer 46286
+    Connection established with peer 51100
+    lp
+    List connected peers:
+    Node 5003 has no connected peers.
+    >:quit
+    All sockets closed. Exiting program.
+
+  # node 5005
+  python3 p2p2.py
+    Enter your port (e.g., 5000, 5001, etc.): 5005
+    >:Node listening on 127.0.0.1:5005
+    Connection established with peer 54210
+    Connection established with peer 35266
+    Connection established with peer 44274
+    lp
+    List connected peers:
+    Node 5005 has no connected peers.
+    >:quit
+    All sockets closed. Exiting program.
+
+  # node 5009
+  python3 p2p2.py
+    Enter your port (e.g., 5000, 5001, etc.): 5009
+    >:Node listening on 127.0.0.1:5009
+    Connection established with peer 57946
+    lp
+    List connected peers:
+    Node 5009 has no connected peers.
+    >:scan
+    Discover active peers:
+    Scanning peer 5000...
+    Peer 5000 is active.
+    Scanning peer 5001...
+    Peer 5001 is inactive.
+    Scanning peer 5002...
+    Peer 5002 is inactive.
+    Scanning peer 5003...
+    Peer 5003 is active.
+    Scanning peer 5004...
+    Peer 5004 is inactive.
+    Scanning peer 5005...
+    Peer 5005 is active.
+    Scanning peer 5006...
+    Peer 5006 is inactive.
+    Scanning peer 5007...
+    Peer 5007 is inactive.
+    Scanning peer 5008...
+    Peer 5008 is inactive.
+    >:Connection established with peer 57384
+    lp
+    List connected peers:
+    Node 5009 has no connected peers.
+    >:quit
+    All sockets closed. Exiting program.
+  ```
+
+### Task 3: **Search for Shared Files**
+
+In this task, we will 
+- 🎏 implement functionality to search for specified shared files on the connected peers.
+- 🎏 handle `search requests` from peers.
+
+Since each peer maintains a list of known peers (IP and port), port (peer id) only in this simplified lab, to connect to, we can implement a mechanism to ask for a shared file from its connected peers only for simplicity.
+
+#### Reference Code:
+
+```python
+# Function to handle file searches and requests from connected peers
+# - SRCH filename
+# - REQ filename
+def handle_peer(self, response_socket, peer_id):
+    while not self.evExit.is_set():
+        msg = response_socket.recv(1024)
+        if not msg:
+            print(f'Peer {peer_id} closed connection.')
+            with self.lock:
+                self.response_sockets.pop(peer_id)
+            break
+        print(f"Received message from {peer_id}: {msg}")
+        cmds = msg.decode().strip().split()
+
+        # 1. handle SRCH filename
+        if (len(cmds) == 0) or (not cmds[0]):
+            print('Empty message.')
+        elif (cmds[0] == 'SRCH') and cmds[1]:
+            filename = cmds[1]
+            file_path = os.path.join(self.shared_dir, filename)
+            if os.path.exists(file_path):
+                hint = f'150 {filename} found.'   
+            else:
+                hint = f'450 {filename} not found.'
+            print(f"Response to peer {peer_id}:  {hint}")
+            response_socket.sendall(hint.encode())             
+
+        # 2. handle REQ file name
+        elif (cmds[0] == 'REQ') and cmds[1]:
+          pass
+        else:
+            print('Unknown message.')
+            pass
+
+# Function to search for a file from another peer
+def search_file(self, filename):
+    # we search among the connected peers only
+    msg = f'SRCH {filename}'
+    lostconnections = []
+    for pid, psock in self.request_sockets.items():
+        psock.sendall(msg.encode())
+
+        # Receive response
+        data = psock.recv(1024)
+        if not data:
+            print(f'Peer {pid} disconnected.')
+            lostconnections.append[pid]
+            break
+        response = data.decode().strip()
+        print(f"{response[4:-1]} on {pid}")
+    
+    # remove peers disconnected
+    with self.lock:
+        for p in lostconnections:
+            self.request_sockets.pop(p)
+```
+
+- 🖥️ Sample output:
+  - Run at least 4 nodes, put an image file in the shared folders in two of them
+  ```
+  # node 5000 connects to other 3 nodes and looks a file
+  python3 p2p3.py 
+    Enter your port (e.g., 5000, 5001, etc.): 5000
+    >:Node listening on 127.0.0.1:5000
+    connect 5003
+    Connect to peer 5003:
+    Peer 5003 connected.
+    >:connect 5005
+    Connect to peer 5005:
+    Peer 5005 connected.
+    >:connect 5009
+    Connect to peer 5009:
+    Peer 5009 connected.
+    >:lp
+    List connected peers:
+    Node 5000 has connected peers: 5003 5005 5009 
+    >:sf SkyShip.jpg
+    Search for SkyShip.jpg on all connected peers:
+    SkyShip.jpg found on 5003
+    SkyShip.jpg not found on 5005
+    SkyShip.jpg found on 5009
+    >:quit
+    All sockets closed. Exiting program.
+
+  # node 5003
+  python3 p2p3.py 
+    Enter your port (e.g., 5000, 5001, etc.): 5003
+    >:Node listening on 127.0.0.1:5003
+    Connection established with peer 40730
+    Received message from 40730: b'SRCH SkyShip.jpg'
+    Response to peer 40730:  150 SkyShip.jpg found.
+    Peer 40730 closed connection.
+    quit
+    All sockets closed. Exiting program.
+
+  # node 5005
+  python3 p2p3.py 
+    Enter your port (e.g., 5000, 5001, etc.): 5005
+    >:Node listening on 127.0.0.1:5005
+    Connection established with peer 48486
+    Received message from 48486: b'SRCH SkyShip.jpg'
+    Response to peer 48486:  450 SkyShip.jpg not found.
+    Peer 48486 closed connection.
+    quit
+    All sockets closed. Exiting program.
+
+  # node 5009
+  python3 p2p3.py 
+    Enter your port (e.g., 5000, 5001, etc.): 5009
+    >:Node listening on 127.0.0.1:5009
+    Connection established with peer 39962
+    Received message from 39962: b'SRCH SkyShip.jpg'
+    Response to peer 39962:  150 SkyShip.jpg found.
+    Peer 39962 closed connection.
+    quit
+    All sockets closed. Exiting program.
+  ```
+
+### Task 4: **Download Files from Peers**
+
+In this task, we will implement the file download functionality, where one peer can request a file from another peer and download it.
+
+- 🎏 **File Request**:  
+   Implement a function that requests a specific file from a peer.
+
+- 🎏 **Send File**:  
+   When a peer requests a file, the other peer should send the file over the connection.
+
+- 🎏 **Receive and Save the File**:  
+   The requesting peer should receive the file data and save it in its shared directory.
+
+#### Reference Code:
+
+```python
+# Handle REQ file name in `handle_peer`
+file_path = os.path.join(self.shared_dir, filename)
+if os.path.exists(file_path):
+    # let's use TCP stream framing `Length-prefix` here
+    # since we don't close the connection after each request
+    hint = f'250 {filename} found.'
+    lhint = f'{hint:40}' # 40 bytes for the response
+    data = b''
+    with open(file_path, 'rb') as f:
+        data = f.read()
+    data_length = len(data)
+    msg = lhint.encode() + struct.pack('!I', data_length) + data               
+    print(f"Response to peer {peer_id}:  {hint} Length in bytes: {data_length}")
+    response_socket.sendall(msg)
+else:
+    hint = f'550 {filename} not found.'
+    lhint = f'{hint:40}' # 40 bytes for the response
+    print(f"Response to peer {peer_id}:  {hint}")
+    response_socket.sendall(lhint.encode())
+
+
+# Function to request a file from another peer
+def request_file(self, peer_id, filename):
+    msg = f'REQ {filename}'
+    # requests a specific file from a peer.
+    self.request_sockets[peer_id].sendall(msg.encode())
+    
+    # Receive response
+    # Receive and Save the File
+    response = self.recvall(peer_id, 40)
+    if response[:3] == b'250':
+        prefix = self.recvall(peer_id, 4)
+        data_length = struct.unpack('!I', prefix)[0]
+        data = self.recvall(peer_id, data_length)
+
+        file_path = os.path.join(self.shared_dir, filename)
+        with open(file_path, 'wb') as f:
+            f.write(data)        
+        print(f"{response[4:-1].decode().strip()[:-1]} on {peer_id}. {data_length} bytes received.")
+    else:
+        print(f"{response[4:-1].decode().strip()[:-1]} on {peer_id}.")
+# receive a block of message with specified length
+def recvall(self, peer_id, length):
+    blocks = []
+    while length:
+        block = self.request_sockets[peer_id].recv(length)
+        if not block:
+            print(f'Peer {peer_id} disconnected.')
+            # remove peers disconnected
+            with self.lock:
+                self.request_sockets.pop(peer_id)
+
+            raise EOFError('socket closed with {} bytes left'
+                        ' in this block'.format(length))
+        length -= len(block)
+        blocks.append(block)
+    return b''.join(blocks)
+```
+
+- 🖥️ Sample output:
+  - Run at least 2 nodes, put an image file in the shared folders in one of them
+  ```
+  # node 5000 as the file requester
+  python3 p2p4.py 
+    Enter your port (e.g., 5000, 5001, etc.): 5000
+    >:Node listening on 127.0.0.1:5000
+    connect 5003
+    Connect to peer 5003:
+    Peer 5003 connected.
+    >:sf SkyShip.jpg
+    Search for SkyShip.jpg on all connected peers:
+    SkyShip.jpg found on 5003
+    >:sf SkyPalace.jpg
+    Search for SkyPalace.jpg on all connected peers:
+    SkyPalace.jpg not found on 5003
+    >:request SkyPalace.jpg 5003
+    Request file SkyPalace.jpg from peer 5003:
+    SkyPalace.jpg not found on 5003.
+    >:request SkyShip.jpg 5003
+    Request file SkyShip.jpg from peer 5003:
+    SkyShip.jpg found on 5003. 85021 bytes received.
+    >:quit
+    All sockets closed. Exiting program.
+
+  # node 5003 as the file provider  
+  python3 p2p4.py 
+    Enter your port (e.g., 5000, 5001, etc.): 5003
+    >:Node listening on 127.0.0.1:5003
+    Connection established with peer 33228
+    Received message from 33228: sendalSRCH SkyShip.jpg.
+    Response to peer 33228:  150 SkyShip.jpg found.
+    Received message from 33228: sendalSRCH SkyPalace.jpg.
+    Response to peer 33228:  450 SkyPalace.jpg not found.
+    Received message from 33228: sendalREQ SkyPalace.jpg.
+    Response to peer 33228:  550 SkyPalace.jpg not found.
+    Received message from 33228: sendalREQ SkyShip.jpg.
+    Response to peer 33228:  250 SkyShip.jpg found. Length in bytes: 85021
+    quit
+    All sockets closed. Exiting program.
+  ```
 
 ---
 
-# **Task 4: Repeat Task 2 with SSL**
-
-## **Instructions**:
-1. Repeat the process of downloading the image as Task 2.
-2. Capture the network traffic with Wireshark.
-3. Attempt to reconstruct the image from the sniffed packets.
-4. 🎏 Decrypting SSL-secured traffic between the FTP client and server
-
-Decrypting any SSL-encrypted communication requires access to the **SSL/TLS session keys** or the server's **private key**. This is because SSL/TLS encrypts the data using a combination of public-key cryptography and symmetric encryption, which makes the traffic unreadable unless you have access to the keys used during the SSL handshake.
-
-
-**Using SSL Session Keys for Ephemeral Key Exchanges (ECDHE/DHE)**
-
-If you are using **ephemeral key exchanges (DHE or ECDHE)** (which is more common in modern SSL setups), the server’s private key cannot be used to decrypt traffic. Instead, you need access to the **SSL session keys**, which are temporarily generated during the session.
-
-The easiest way to decrypt the traffic in this case is to log the session keys using an environment variable on the client or server.
-
-- **Steps to Decrypt SSL Traffic Using SSL Session Keys**:
-
-1. **Enable SSL Key Logging in the Client or Server**:
-   Modern SSL libraries (like OpenSSL or `ssl` in Python) allow logging the session keys used in the encryption. Here’s how you can do that.
-
-   - Set the `SSLKEYLOGFILE` environment variable on the client-side before running the FTP client.
-     ```bash
-     export SSLKEYLOGFILE=./sslkeys.log
-     ```
-2. **Run the FTP Client**:
-   Run the FTP client as usual. This will generate a log file `sslkeys.log` containing the session keys for the encrypted traffic.
-
-   - 💻 the content of `sslkeys.log`
-3. **Capture the Traffic with Wireshark**:
-   - Use Wireshark to capture the encrypted traffic during the FTP session.
-   - Save the capture file.
-
-4. **Configure Wireshark to Decrypt SSL Using Session Keys**:
-   - Open Wireshark and load the capture file.
-   - Go to **"Edit" > "Preferences"**.
-   - Expand **"Protocols"** and find **"TLS"**.
-   - In the **(Pre)-Master-Secret log filename** field, browse and select the `sslkeys.log` file that was generated.
-
-5. **Analyze the Traffic**:
-   - Wireshark should now use the session keys to decrypt the SSL/TLS traffic.
-   - You can view the plaintext data, including the user credential and the image.
-   - 💻 user credential
-   - 💻 SOI, image data, and EOI
-   - 💻 Reconstructed image
+### Lab Conclusion:
+In this lab, we learned how to create a simple P2P file-sharing system in Python. We implemented console-based interaction, peer discovery, file requests, and graceful shutdown of peers. This lab provides a foundation for more advanced P2P concepts, such as peer discovery protocols and distributed file systems.
 
 ---
 
-# **Conclusion**
-By completing this lab, you will:
-- Gain an understanding of TCP framing for more reliable communication.
-- Realize the risks of unencrypted data transmission.
-- Learn to implement SSL to secure communications and protect sensitive data from interception.
-
-
-# **Optional: Further improvement**
-- Implement all popular **FTP protocol commands**, **FTP status codes** and **modes**.
-
+### Optional Improvements
+- Connection pooling and caching
+- Peer reputation systems
+- Network topology management
+- Authenticate and Authorize
+  * Username/password authentication
+  * Digital certificates or public key infrastructure (PKI)
+  * Token-based authentication
+- Discover Other Peers
+  * DHT (Distributed Hash Table) queries
+  * Peer-to-peer gossip protocols
+  * Social networking-style updates
+- Store and Update Local Peer List
+  - Store the discovered peers locally and update the local peer list periodically to reflect changes in the network.
+- Handle various exceptions
+- Search for files recursively like a web crawler?

@@ -3,5 +3,5 @@
 - [Lab02: Implement ntp client and server](./lab02/README.md)
 - [Lab03: Stream Framing in TCP Socket Programming](./lab03/README.md)
 - [Lab04: Building a Multithreaded Chat System](./lab04/README.md)
-- [Lab05: Securing Socket Communication with SSL](./lab05/README.md)
-- [Lab06: Peer-to-Peer (P2P) Programming](./lab06/README.md)
+- [Lab05: Peer-to-Peer (P2P) Programming](./lab05/README.md)
+- [Lab06: Securing Socket Communication with SSL](./lab06/README.md)
