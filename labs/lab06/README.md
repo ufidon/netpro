@@ -278,9 +278,14 @@ Connection closed. Exiting.
 ## **Instructions**:
 1. **Run Wireshark**:
    - Capture traffic on the network interface used by the FTP server and client.
-   - Filter traffic using:
+   - Apply display filter using:
      ```plaintext
+     # show commands and responses
      tcp.port == 2121 # Your FTP port number in your code, unnecessary the standard 21
+
+     # ⚠️ if your data port is assigned by the OS, turn off the capture filter to capture all traffic
+     # then find your data port from your server response, 
+     # apply it as a display filter to make you easier to find the image
      ```
 
 2. **Download an Image**:
