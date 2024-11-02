@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTTP Methods Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; }
+    h1 { text-align: center; }
+    button { padding: 10px 20px; margin: 10px 0; width: 100%; font-size: 16px; }
+    .description { margin-bottom: 15px; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>HTTP Methods Demo</h1>
+    <div><p class="description">The GET button retrieves data from the server.</p><button onclick="sendGetRequest()">Send GET Request</button></div>
+    <div><p class="description">The POST button sends data to create a new resource.</p><button onclick="sendPostRequest({ title: 'New Title', description: 'This is a new resource' })">Send POST Request</button></div>
+    <div><p class="description">The PUT button updates an existing resource with new data.</p><button onclick="sendPutRequest({ title: 'Updated Title', description: 'This is an updated description' })">Send PUT Request</button></div>
+    <div><p class="description">The DELETE button removes a specific resource.</p><button onclick="sendDeleteRequest()">Send DELETE Request</button></div>
+    <div><p class="description">The PATCH button partially updates a resource.</p><button onclick="sendPatchRequest({ title: 'Partially Updated Title' })">Send PATCH Request</button></div>
+    <div><p class="description">The OPTIONS button checks allowed methods for this resource.</p><button onclick="sendOptionsRequest()">Send OPTIONS Request</button></div>
+    <div><p class="description">The HEAD button retrieves only headers without the response body.</p><button onclick="sendHeadRequest()">Send HEAD Request</button></div>
+    <div><p class="description">The TRACE button echoes the request for diagnostic purposes.</p><button onclick="sendTraceRequest()">Send TRACE Request</button></div>
+  </div>
+  <script>
+    const url = 'http://127.0.0.1:8080';
+    async function sendRequest(method, data = null) {
+      try {
+        const options = { method };
+        if (data) options.body = JSON.stringify(data);
+        const response = await fetch(url, options);
+        console.log(`${method} Response:`, await response.text());
+        alert(`${method} request sent successfully`);
+      } catch (error) {
+        console.error(`Error in ${method} request:`, error);
+        alert(`Failed to send ${method} request`);
+      }
+    }
+    const sendGetRequest = () => sendRequest('GET');
+    const sendPostRequest = (data) => sendRequest('POST', data);
+    const sendPutRequest = (data) => sendRequest('PUT', data);
+    const sendDeleteRequest = () => sendRequest('DELETE');
+    const sendPatchRequest = (data) => sendRequest('PATCH', data);
+    const sendOptionsRequest = () => sendRequest('OPTIONS');
+    const sendHeadRequest = () => sendRequest('HEAD');
+    const sendTraceRequest = () => sendRequest('TRACE');
+  </script>
+</body>
+</html>
