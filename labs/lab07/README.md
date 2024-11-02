@@ -368,7 +368,7 @@ Content-Type: text/html
 2. **Instructions**:
    - Change line 28 `const url = 'http://127.0.0.1:8080';` in `allmethods.html` to 
    - `const url = 'http://127.0.0.1:8443';`
-   - Describe the different of the following two commands
+   - Describe the different between the following two commands
      - `curl -v https://127.0.0.1:8443`
      - `curl -v -k https://127.0.0.1:8443`
    - Redo `all cURL commands listed in Task 1` in the successful way.
@@ -376,3 +376,6 @@ Content-Type: text/html
    - Access `https://127.0.0.1:8443` with a browser.
      - Can it access `https://127.0.0.1:8443` fluently? Why?
      - Make the access painlessly.
+     - Access `https://127.0.0.1:8443/index.html` then submit the login credential.
+     - Access `https://127.0.0.1:8443/allmethods.html` then click each button separately.
+   - Compare your findings with those from Task 2. Explain the differences.
