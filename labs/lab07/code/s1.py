@@ -77,7 +77,7 @@ def handle_client_connection(client_socket):
             
             # favorite icon
             method, _ = headers.split('\r\n', 1)
-            # for simplicity here, you should use urllib
+            # for simplicity here
             if 'favicon.ico' in method:
               response = """
 HTTP/1.1 404 Not Found
