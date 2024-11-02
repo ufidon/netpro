@@ -309,6 +309,7 @@ curl -v -X TRACE https://httpbin.org/trace
      - Click each button and explained what you observed
      - Which methods are successful? Which methods are failed? Why?
        - 👉 Hint: Use WireShark to find out failed methods are NOT sent out by the browser at all.
+       - Or watch browser's console of `Developers tools`.
 
 ### **Task 3: Secure the HTTP Server with SSL/TLS**
 1. **Goal**: Add SSL/TLS encryption to `the server you updated in Task 2` using the `ssl` library to transform it into an HTTPS server.
