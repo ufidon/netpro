@@ -89,23 +89,7 @@ Connection: keep-alive\r\n\r\n
               continue
 
             # Home page: index.html
-            # Read the HTML content from index.html
-            for html in ['index.html', 'allmethods.html']:
-                if html in method:
-                    try:
-                        with open(html, 'r') as f:
-                            html_content = f.read()
-                        
-                        # Create HTTP response with the content of the HTML file
-                        http_response = f"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {len(html_content)}\r\n\r\n{html_content}"
-                    
-                    except FileNotFoundError:
-                        # Handle the case where the HTML file is not found
-                        http_response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>404 Not Found</h1><p>The requested resource was not found on the server.</p>"
 
-                    # Send the response
-                    client_socket.sendall(http_response.encode())
-                    continue
                 
             # For all other requests, 
             # Prepare a response showing the details of the request
