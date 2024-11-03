@@ -24,6 +24,7 @@ Tentative topics:
 - [Network Programming with Go](https://github.com/arstream/Network-Programming-with-Go)
   - [example code](https://github.com/awoodbeck/gnp)
   - [2e](https://github.com/Apress/network-prog-with-go-2e)
+  - [The Go Programming Language](https://github.com/adonovan/gopl.io)
 
 # Network basics
 - [Computer Networking: a Top Down Approach 8th](https://gaia.cs.umass.edu/kurose_ross/index.php)

@@ -379,3 +379,6 @@ Content-Type: text/html
      - Access `https://127.0.0.1:8443/index.html` then submit the login credential.
      - Access `https://127.0.0.1:8443/allmethods.html` then click each button separately.
    - Compare your findings with those from Task 2. Explain the differences.
+
+# References
+- [Favicon generator](https://realfavicongenerator.net/)
