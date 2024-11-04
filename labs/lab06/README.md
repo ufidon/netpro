@@ -454,8 +454,12 @@ The easiest way to decrypt the traffic in this case is to log the session keys u
    - In the **(Pre)-Master-Secret log filename** field, browse and select the `sslkeys.log` file that was generated.
    - 👉 You should see some tabs show `Decrypted` in the status bar
    - 👉 To get the decrypted data, follow `TLS stream` instead of `TCP stream`
+- 👉 [Embedding decryption secrets in a pcapng file](https://wiki.wireshark.org/TLS)
+  ```bash
+  editcap --inject-secrets tls,sslkeys.log ftp.pcap deftp.pcapng
+  ```
 
-5. **Analyze the Traffic**:
+1. **Analyze the Traffic**:
    - Wireshark should now use the session keys to decrypt the SSL/TLS traffic.
    - You can view the plaintext data, including the user credential and the image.
    - 💻 user credential
