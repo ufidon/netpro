@@ -452,6 +452,8 @@ The easiest way to decrypt the traffic in this case is to log the session keys u
    - Go to **"Edit" > "Preferences"**.
    - Expand **"Protocols"** and find **"TLS"**.
    - In the **(Pre)-Master-Secret log filename** field, browse and select the `sslkeys.log` file that was generated.
+   - 👉 You should see some tabs show `Decrypted` in the status bar
+   - 👉 To get the decrypted data, follow `TLS stream` instead of `TCP stream`
 
 5. **Analyze the Traffic**:
    - Wireshark should now use the session keys to decrypt the SSL/TLS traffic.
