@@ -397,11 +397,11 @@ Content-Type: text/html
    secure_http_server()
 ```
 
-### **Task 4: Test the HTTPS Server with cURL**
+### **Task 4: Test the HTTPS Server with cURL and browser**
 1. **Goal**: Test the HTTPS server’s functionality and SSL/TLS security using cURL and browsers.
 2. **Instructions**:
    - Change line 28 `const url = 'http://127.0.0.1:8080';` in `allmethods.html` to 
-   - `const url = 'http://127.0.0.1:8443';`
+     - `const url = 'http://127.0.0.1:8443';`
    - 🎏 Describe the different between the following two commands
      - `curl -v https://127.0.0.1:8443`
      - `curl -v -k https://127.0.0.1:8443`
@@ -409,9 +409,20 @@ Content-Type: text/html
      - **Note**: Use `-k` to allow cURL to accept a self-signed certificate for testing purposes.
    - 🎏 Access `https://127.0.0.1:8443` with a browser.
        - Can it access `https://127.0.0.1:8443` fluently? Why?
-     - 🎏 Make the access painlessly.
-     - Access `https://127.0.0.1:8443/index.html` then submit the login credential.
-     - Access `https://127.0.0.1:8443/allmethods.html` then click each button separately.
+       - 🎏 Make the access painlessly by installing the self-signed certificate into your browser.
+         - Install the Certificate in Google Chrome
+           - Go to chrome://settings/ and scroll down to Privacy and Security.
+           - Select Security > Manage certificates.
+           - In the Authorities tab, click Import, select your certificate file (cert.pem or similar), and confirm.
+           - Restart Chrome to apply changes.
+         - Install the Certificate in Mozilla Firefox
+           - Go to about:preferences and scroll to Privacy & Security.
+           - Under Certificates, click View Certificates....
+           - Go to the Authorities tab and click Import.
+           - Select your certificate file, check Trust this CA to identify websites, and confirm.
+           - Restart Firefox.         
+   - 🎏 Access `https://127.0.0.1:8443/index.html` then submit the login credential.
+   - 🎏 Access `https://127.0.0.1:8443/allmethods.html` then click each button separately.
    - 🎏 Compare your findings with those from Task 2. Explain the differences.
 
 # References
