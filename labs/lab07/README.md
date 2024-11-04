@@ -1,5 +1,9 @@
 # HTTP & HTTPS
-This lab provides hands-on experience with building, testing, and securing a basic HTTP server in Python, along with client interactions using cURL. 
+This lab provides 
+
+- a foundational understanding of the HTTP protocol, focusing on its communication style, message formats, request methods, and response codes. 
+- hands-on experience with building, testing, and securing a basic HTTP server in Python, along with client interactions using cURL. 
+
 
 In your report, 
 - 🎏 explain the code you added or modified
@@ -110,6 +114,35 @@ The HTTP methods define the type of operation the client wants to perform on the
 | **OPTIONS**     | Returns HTTP methods supported by the server for a specific resource.           | Useful for checking server capabilities, such as supported methods and CORS (Cross-Origin Resource Sharing) configurations. |
 | **CONNECT**     | Establishes a tunnel to the server, typically used for SSL/TLS connections.     | Commonly used for HTTPS connections by establishing a proxy tunnel.                              |
 | **TRACE**       | Echoes the received request, allowing the client to see what changes are made along the request path. | Used mainly for debugging and diagnostics, though rarely used due to security concerns.          |
+
+---
+## [HTTP response codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
+Here’s a table that groups HTTP response codes by category, along with descriptions and common use cases:
+
+| **Category**        | **Status Code** | **Description**                                | **Use Case**                                                                 |
+|---------------------|-----------------|------------------------------------------------|------------------------------------------------------------------------------|
+| **1xx Informational** | 100 Continue     | Indicates that the initial part of a request has been received and the client can continue with the request | Used to inform the client to proceed, often in large POST requests where the server has to validate headers first. |
+|                     | 101 Switching Protocols | Server accepts the request to switch protocols | Used in WebSocket connections where a protocol switch from HTTP to WebSocket is needed. |
+|                     | 102 Processing   | Server is processing but hasn’t completed | Common in WebDAV, indicating the server is processing, but there’s no final response yet. |
+| **2xx Successful**  | 200 OK           | Request succeeded and the server returned the requested resource | Standard success code for GET and POST requests, used to confirm successful processing. |
+|                     | 201 Created      | Request succeeded and a new resource was created | Common in REST APIs to indicate resource creation, e.g., after a POST request to create an object. |
+|                     | 202 Accepted     | Request accepted for processing, but not completed | Used when an action will be processed asynchronously, often for batch processing. |
+|                     | 204 No Content   | Request succeeded but no content is returned | Used in PUT/DELETE requests to indicate success with no body returned. |
+| **3xx Redirection** | 301 Moved Permanently | Resource has been permanently moved to a new URI | Common in URL redirects, SEO adjustments, or site migrations. |
+|                     | 302 Found        | Temporarily redirected to another URI | Used to redirect temporarily, typically in maintenance or temporary relocation of a resource. |
+|                     | 304 Not Modified | Resource hasn’t changed since last requested | Used in caching to reduce bandwidth by informing the client they can use a cached version. |
+|                     | 307 Temporary Redirect | Request temporarily redirected but must use the same HTTP method | Similar to 302, but mandates the method cannot be changed. Often used in temporary URL shifts. |
+| **4xx Client Error**| 400 Bad Request  | Client-side input error or malformed request syntax | Often seen when query parameters or body format are incorrect in API requests. |
+|                     | 401 Unauthorized | Client must authenticate to access the resource | Used to require login before accessing certain resources. |
+|                     | 403 Forbidden    | Server understood the request, but refuses to authorize it | Seen when users try to access restricted resources without proper permissions. |
+|                     | 404 Not Found    | Resource not found at the given URI | Most common error indicating that a resource doesn’t exist at the specified URL. |
+|                     | 405 Method Not Allowed | HTTP method used is not allowed for this resource | Returned when using a method not supported by the server for a given URI, e.g., POST on a GET-only endpoint. |
+|                     | 429 Too Many Requests | Client has sent too many requests in a time frame | Common in APIs to enforce rate limits and prevent abuse. |
+| **5xx Server Error**| 500 Internal Server Error | Server encountered an unexpected condition | A generic error message when the server fails to fulfill a request due to an internal issue. |
+|                     | 501 Not Implemented | Server doesn’t support the requested method | Seen when a method (e.g., PUT) is not supported by the server. |
+|                     | 502 Bad Gateway  | Invalid response from an upstream server | Occurs in cases of server misconfigurations or issues with reverse proxies. |
+|                     | 503 Service Unavailable | Server is temporarily overloaded or under maintenance | Used during server maintenance or heavy load periods to indicate temporary unavailability. |
+|                     | 504 Gateway Timeout | Upstream server took too long to respond | Seen when a server acting as a gateway times out while waiting for a response. |
 
 ---
 
@@ -225,10 +258,11 @@ A web browser can send certain HTTP methods, but its capability is somewhat limi
    - `TRACE`
 
 3. **Investigate the Responses**  
-   For each request, observe and record:
+   For each request, 🎏 observe and record:
    
    - **Status Code**: The HTTP status code returned (e.g., 200 OK, 405 Method Not Allowed).
    - **Response Headers**: Headers returned by the server (e.g., `Content-Type`, `Allow`).
+     - Describe the usage of each different header entry
    - **Response Body**: 
      - Body content if available. Save it in a HTML file, show the rendered page.
      - Some methods, like `HEAD`, should not return a body.
@@ -250,7 +284,7 @@ A web browser can send certain HTTP methods, but its capability is somewhat limi
    | PATCH       | 405         | Allow: GET, POST                | N/A               | Not often supported on public servers.   |
    | TRACE       | 405         | N/A                             | N/A               | Typically disabled for security reasons. |
 
-5. **Questions to Answer**  
+5. **🎏 Questions to Answer**  
 
    - Which methods are supported by most websites?  
    - Why do some methods (like DELETE or TRACE) return a `405 Method Not Allowed`?  
@@ -299,17 +333,17 @@ curl -v -X TRACE https://httpbin.org/trace
 
 2. **Instructions**:
 
-   For each step below, investigate the output on both the client and the server, describe your findings.
+   For each step below, 🎏  investigate the output on both the client and the server, describe your findings.
    - Run `s1.py`, access it from a browser such as Google Chrome with url: `http://127.0.0.1:8080`.
      - What is the HTTP method sent to the server? Describe the interesting headers you found.
      - Can you send HTTP methods other than GET through the browser without client-side script?
-     - POST methods are usually sent using HTML forms. Modify `s1.py` so that it can respond with a login page [index.html](./code/index.html) when access `http://127.0.0.1:8080/index.html`.
+   - POST methods are usually sent using HTML forms. 🎏 Modify `s1.py` so that it can respond with a login page [index.html](./code/index.html) when access `http://127.0.0.1:8080/index.html`.
        - Fill the login page then submit
-   - Browser restricted methods can only be sent via JavaScript, such as using the fetch API or XMLHttpRequest. forms. Modify `s1.py` so that it can respond with a full methods page [allmethods.html](./code/allmethods.html) when access `http://127.0.0.1:8080/allmethods.html`.
-     - Click each button and explained what you observed
+   - Browser restricted methods can only be sent via JavaScript, such as using the fetch API or XMLHttpRequest. forms. 🎏 Modify `s1.py` so that it can respond with a full methods page [allmethods.html](./code/allmethods.html) when access `http://127.0.0.1:8080/allmethods.html`.
+     - 🎏 Click each button and explained what you observed
      - Which methods are successful? Which methods are failed? Why?
-       - 👉 Hint: Use WireShark to find out failed methods are NOT sent out by the browser at all.
-       - Or watch browser's console of `Developers tools`.
+       - 👉 Hint: watch browser's console, one of the `Developers tools`.
+       - Or use WireShark to find out failed methods are NOT sent out by the browser at all.
 
 ### **Task 3: Secure the HTTP Server with SSL/TLS**
 1. **Goal**: Add SSL/TLS encryption to `the server you updated in Task 2` using the `ssl` library to transform it into an HTTPS server.
@@ -319,7 +353,7 @@ curl -v -X TRACE https://httpbin.org/trace
      ```bash
      openssl req -x509 -newkey rsa:2048 -keyout server.key -out server.crt -days 365 -nodes
      ```
-   - Wrap the socket with SSL/TLS using Python's `ssl` library.
+   - 🎏 Wrap the socket with SSL/TLS using Python's `ssl` library.
    - Ensure the server listens securely on a new port, like 8443.
 
    **Sample code for reference only**:
@@ -368,17 +402,19 @@ Content-Type: text/html
 2. **Instructions**:
    - Change line 28 `const url = 'http://127.0.0.1:8080';` in `allmethods.html` to 
    - `const url = 'http://127.0.0.1:8443';`
-   - Describe the different between the following two commands
+   - 🎏 Describe the different between the following two commands
      - `curl -v https://127.0.0.1:8443`
      - `curl -v -k https://127.0.0.1:8443`
-   - Redo `all cURL commands listed in Task 1` in the successful way.
+   - 🎏 Redo `all cURL commands listed in Task 1` in the successful way.
      - **Note**: Use `-k` to allow cURL to accept a self-signed certificate for testing purposes.
-   - Access `https://127.0.0.1:8443` with a browser.
-     - Can it access `https://127.0.0.1:8443` fluently? Why?
-     - Make the access painlessly.
+   - 🎏 Access `https://127.0.0.1:8443` with a browser.
+       - Can it access `https://127.0.0.1:8443` fluently? Why?
+     - 🎏 Make the access painlessly.
      - Access `https://127.0.0.1:8443/index.html` then submit the login credential.
      - Access `https://127.0.0.1:8443/allmethods.html` then click each button separately.
-   - Compare your findings with those from Task 2. Explain the differences.
+   - 🎏 Compare your findings with those from Task 2. Explain the differences.
 
 # References
+- [HTTP/1.1](https://datatracker.ietf.org/doc/html/rfc9112)
+- [HTTP Semantics](https://datatracker.ietf.org/doc/html/rfc9110)
 - [Favicon generator](https://realfavicongenerator.net/)
