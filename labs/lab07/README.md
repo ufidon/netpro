@@ -382,3 +382,11 @@ Content-Type: text/html
 
 # References
 - [Favicon generator](https://realfavicongenerator.net/)
+- [Chrome disable SSL checking for sites?](https://stackoverflow.com/questions/26388405/chrome-disable-ssl-checking-for-sites)
+   ```bash
+   Chrome --ignore-certificate-errors --ignore-urlfetcher-cert-requests
+   # or
+   chromium --ignore-certificate-errors --ignore-urlfetcher-cert-requests
+   # check certificate chain with openssl
+   openssl s_client -connect <hostname>:443 -showcerts
+   ```
