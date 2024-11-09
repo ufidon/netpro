@@ -437,4 +437,3 @@ Content-Type: text/html
    # check certificate chain with openssl
    openssl s_client -connect <hostname>:443 -showcerts
    ```
-
