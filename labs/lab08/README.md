@@ -77,6 +77,7 @@ def digest_login():
 - 🎏 Run [t1.py](./code/t1.py), use `cURL and browser` to trigger each route
   - Run the web app: `python3 t1.py `
   - 💻 server-side and client-side outputs
+  - 💻 find the details in requests and responses
 
 ---
 
@@ -178,6 +179,7 @@ def update_digest():
 - 🎏 Build your code `t2.py` incrementally from [t1.py](./code/t1.py)
 - 🎏 Run `t2.py`, use `cURL and browser` to trigger each updated route
   - 💻 server-side and client-side outputs
+  - 💻 find the details in requests and responses
 
 ---
 
