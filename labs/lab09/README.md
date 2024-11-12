@@ -9,6 +9,7 @@ This lab gives your hands-on experience on web services that covers investigatin
 In your report, 
 - 🎏 explain the code you added or modified and actions taken
 - 💻 illustrate with screenshots of corresponding outputs
+- 🎏 explain the outputs
 
 
 
@@ -129,6 +130,8 @@ To test the [IPinfo API](https://ipinfo.io/developers), make a `GET` request wit
 curl -v "https://ipinfo.io/8.8.8.8?token=your_api_token"
 ```
 
+- 🎏 output and explanation
+
 ### Step 1.3: Access IPinfo API with Python Requests
 In Python, you can use the `requests` library to make a similar request.
 
@@ -145,6 +148,9 @@ if response.status_code == 200:
 else:
     print("Failed to retrieve data:", response.status_code)
 ```
+
+- 🎏 output and explanation
+
 
 ### Step 1.4: [IPinfo Python Client Library](https://github.com/ipinfo/python)
 This official library simplifies accessing IPinfo. Install the library first
@@ -167,6 +173,8 @@ pip install ipinfo
 
   pprint.pprint(details.all)
   ```
+
+- 🎏 output and explanation
 
 ---
 
@@ -245,6 +253,8 @@ if __name__ == "__main__":
     app.run(port=5000, debug=True)
 ```
 
+- 🎏 Code and explanation
+
 ### Explanation of Each API
 
 1. **`GET /get_params`**:
@@ -289,6 +299,7 @@ This setup provides three distinct endpoints for managing and generating Lissajo
 ```bash
 curl -X GET http://127.0.0.1:5000/get_params
 ```
+- 🎏 output and explanation
 
 #### Using Python Requests
 ```python
@@ -297,6 +308,7 @@ import requests
 response = requests.get("http://127.0.0.1:5000/get_params")
 print("Current Parameters:", response.json())
 ```
+- 🎏 output and explanation
 
 ---
 
@@ -313,6 +325,7 @@ curl -X POST http://127.0.0.1:5000/set_params \
 # Check the update
 curl -X GET http://127.0.0.1:5000/get_params    
 ```
+- 🎏 output and explanation
 
 #### Using Python Requests
 ```python
@@ -333,7 +346,7 @@ print("Update Response:", response.json())
 response = requests.get("http://127.0.0.1:5000/get_params")
 print("Current Parameters:", response.json())
 ```
-
+- 🎏 output and explanation
 ---
 
 ### API 3: Generate Lissajous Curve GIF (`GET /generate_lissajous`)
@@ -342,6 +355,7 @@ print("Current Parameters:", response.json())
 ```bash
 curl -X GET http://127.0.0.1:5000/generate_lissajous | sed 's/^data:image\/gif;base64,//' | base64 --decode > output1.gif
 ```
+- 🎏 output and explanation
 
 The response will be a Base64-encoded GIF. To view the image, you would need to decode and save it.
 
@@ -374,7 +388,7 @@ if response.status_code == 200:
 else:
     print("Failed to generate image:", response.status_code)
 ```
-
+- 🎏 output and explanation
 ---
 
 ## Task 3: Secure the Web Service with Bearer Token Authentication
@@ -443,6 +457,7 @@ pip install Flask-HTTPAuth
       # same as Task 2  
    ```
 
+- 🎏 Code and explanation
 
 ### Step 3.2:  Testing the APIs with Bearer Tokens
 
@@ -456,6 +471,7 @@ curl -X GET http://127.0.0.1:5000/get_params -H "Authorization: Bearer token123"
 # What do you get without token?
 curl -X GET http://127.0.0.1:5000/get_params
 ```
+- 🎏 output and explanation
 
 #### Using Python Requests
 ```python
@@ -476,6 +492,7 @@ else:
 response = requests.get(url)
 print(response)
 ```
+- 🎏 output and explanation
 
 ### 2. Testing `/set_params` API
 
@@ -491,6 +508,7 @@ curl -X POST http://127.0.0.1:5000/set_params \
      -H "Content-Type: application/json" \
      -d '{"freq": 2.0, "phase": 1.5, "curve_color": [0, 200, 0], "background_color": [20, 1, 1]}'
 ```
+- 🎏 output and explanation
 
 #### Using Python Requests
 ```python
@@ -518,6 +536,7 @@ else:
 response = requests.post(url, headers={"Content-Type": "application/json",}, json=data)
 print(response)  
 ```
+- 🎏 output and explanation
 
 ### 3. Testing `/generate_lissajous` API
 
@@ -528,6 +547,7 @@ curl -X GET http://127.0.0.1:5000/generate_lissajous -H "Authorization: Bearer t
 # What do you get without token?
 curl -X GET http://127.0.0.1:5000/generate_lissajous
 ```
+- 🎏 output and explanation
 
 #### Using Python Requests
 ```python
@@ -565,6 +585,7 @@ else:
 response = requests.get(url) 
 print(response)    
 ```
+- 🎏 output and explanation
 
 ---
 
