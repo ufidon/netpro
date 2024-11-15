@@ -347,5 +347,6 @@ In this lab, you’ve set up a Flask app that:
 - [HTTP Basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication)
 - [HTTP Digest access authentication](https://en.wikipedia.org/wiki/Digest_access_authentication)
   - [RFC 7616](https://datatracker.ietf.org/doc/html/rfc7616#section-3.9.1)
+- [How to Fetch Data from an API Using the Fetch API in JavaScript](https://www.freecodecamp.org/news/how-to-fetch-data-from-an-api-using-the-fetch-api-in-javascript/)
 - [Requests Authentication](https://requests.readthedocs.io/en/latest/user/authentication/)
 - [Lissajous curve](https://en.wikipedia.org/wiki/Lissajous_curve)
