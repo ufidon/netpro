@@ -35,7 +35,7 @@ def main():
         # giving you the folder flags, folder name delimiter, and folder name,
         # and the flags themselves are a sequence of strings
 
-        """
+        r"""
         The standard flags listed for each folder may be zero or more of the following:
  
         \Noinferiors: This means that the folder does not contain any subfolders and that it is
@@ -60,6 +60,11 @@ def main():
         print('Listing mailboxes:')
         data = c.list_folders()
         for flags, delimiter, folder_name in data:
+            # Decode bytes to strings
+            flags = [flag.decode('utf-8', errors='replace') for flag in flags]
+            delimiter = delimiter.decode('utf-8', errors='replace') if isinstance(delimiter, bytes) else delimiter
+            folder_name = folder_name.decode('utf-8', errors='replace') if isinstance(folder_name, bytes) else folder_name
+
             print('  %-30s%s %s' % (' '.join(flags), delimiter, folder_name))
     finally:
         c.logout()

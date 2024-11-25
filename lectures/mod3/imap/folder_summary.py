@@ -45,7 +45,8 @@ def print_summary(c, foldername):
     # The dictionary that is returned maps message UIDs to dictionaries 
     # giving information about each message. 
     for message_id, message in list(msgdict.items()):
-        e = email.message_from_string(message['BODY[]'])
+        body = message[b'BODY[]'].decode('utf-8', errors='replace')  # Decode bytes to string
+        e = email.message_from_string(body)
         print(message_id, e['From'])
         payload = e.get_payload()
         if isinstance(payload, list):

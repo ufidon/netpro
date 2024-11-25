@@ -34,7 +34,7 @@ def explore_account(c):
         folderflags = {}
         data = c.list_folders()
         for flags, delimiter, name in data:
-            folderflags[name] = flags
+            folderflags[name] = [flag.decode('utf-8') if isinstance(flag, bytes) else flag for flag in flags]
         for name in sorted(folderflags.keys()):
             print('%-30s %s' % (name, ' '.join(folderflags[name])))
         print()
