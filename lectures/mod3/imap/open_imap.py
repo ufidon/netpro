@@ -25,7 +25,8 @@ def main():
         sys.exit(2)
 
     hostname, username = sys.argv[1:]
-    c = IMAPClient(hostname, ssl=True)
+    # c = IMAPClient(hostname, ssl=True)
+    c = IMAPClient(hostname, ssl=False)
     try:
         c.login(username, getpass.getpass())
     except c.Error as e:
