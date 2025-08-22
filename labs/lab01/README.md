@@ -225,26 +225,36 @@ You may follow any one of the 7 options below to install an `Ubuntu/Linux enviro
 ```bash
 #!/bin/bash
 
-# update system
+# 1. update system
 sudo apt update && sudo apt upgrade -y
 
-# install XFCE desktop and necessary plugins
+# 2. install XFCE desktop and necessary plugins
 sudo apt install xfce4 xfce4-goodies -y
 
-# install xrdp
+# 3. install xrdp
 sudo apt install xrdp -y
 
-# enable then start xrdp service
+# 4. enable then start xrdp service
 sudo systemctl enable xrdp
 sudo systemctl start xrdp
 
-# configure xrdp to use XFCE session
+# 5. configure xrdp to use XFCE session
 echo "startxfce4" > ~/.xsession
 sudo sed -i.bak '/^new_cursors=true/ s/true/false/' /etc/xrdp/xrdp.ini
 
-# restart xrdp service to apply configuration
+# 6. restart xrdp service to apply configuration
 sudo systemctl restart xrdp
 
+# 7. allow remote sudo
+sudo vim /etc/polkit-1/localauthority.conf.d/02-allow-sudoers.conf
+# add the following 4 lines to 02-allow-sudoers.conf
+[Allow Sudoers]
+Identity=unix-group:sudo
+Action=*
+ResultActive=yes
+
+# 8. install browsers
+sudo apt install chromium-browser firefox
 # create firewall rule (not recommended)
 #gcloud compute firewall-rules create allow-rdp \
 #    --allow tcp:3389 \
@@ -254,6 +264,9 @@ sudo systemctl restart xrdp
 
 echo "Installation done！"
 echo "GCP IAP Desktop or SSH tunnelling for RDP is recommended，avoid exposing port 3389."
+
+# 9. reboot the system
+sudo reboot
 ```
 
 ### Access RDP by GCP IAP
