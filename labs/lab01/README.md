@@ -598,8 +598,11 @@ With VSCode installed and configured, you now have a powerful IDE to develop Pyt
      ```bash
      wireshark tcp_traffic.pcap
      ```
+- **Wireshark Filters**
+  - [Capture filters](https://wiki.wireshark.org/CaptureFilters)
+  - [Display filters](https://wiki.wireshark.org/DisplayFilters)
 
-4. **Analyze Traffic with Wireshark:**
+1. **Analyze Traffic with Wireshark:**
    - In Wireshark, apply a filter for TCP traffic, such as `tcp.port == 65432` (assuming you used port `65432` in your program).
    - Analyze the captured packets to observe the connection setup (SYN, SYN-ACK, ACK), data transfer, and connection termination (FIN, FIN-ACK).
 
