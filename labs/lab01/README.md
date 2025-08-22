@@ -245,7 +245,7 @@ sudo sed -i.bak '/^new_cursors=true/ s/true/false/' /etc/xrdp/xrdp.ini
 # 6. restart xrdp service to apply configuration
 sudo systemctl restart xrdp
 
-# 7. allow remote sudo
+# 7. allow xrdp sudo
 sudo vim /etc/polkit-1/localauthority.conf.d/02-allow-sudoers.conf
 # add the following 4 lines to 02-allow-sudoers.conf
 [Allow Sudoers]
